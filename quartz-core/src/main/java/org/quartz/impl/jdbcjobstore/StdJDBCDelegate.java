@@ -61,8 +61,10 @@ import org.quartz.impl.jdbcjobstore.TriggerPersistenceDelegate.TriggerPropertyBu
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.StringMatcher;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.OperableTrigger;
+import org.quartz.spi.TimeBroker;
 import org.slf4j.Logger;
 
 /**
@@ -98,6 +100,8 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     
     protected ClassLoadHelper classLoadHelper;
 
+    protected TimeBroker timeBroker;
+
     protected List<TriggerPersistenceDelegate> triggerPersistenceDelegates = new LinkedList<TriggerPersistenceDelegate>();
 
     
@@ -129,9 +133,10 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
      * @param initString of the format: settingName=settingValue|otherSettingName=otherSettingValue|...
      * @throws NoSuchDelegateException 
      */
-    public void initialize(Logger logger, String tablePrefix, String schedName, String instanceId, ClassLoadHelper classLoadHelper, boolean useProperties, String initString) throws NoSuchDelegateException {
+    public void initialize(Logger logger, TimeBroker timeBroker, String tablePrefix, String schedName, String instanceId, ClassLoadHelper classLoadHelper, boolean useProperties, String initString) throws NoSuchDelegateException {
 
         this.logger = logger;
+        this.timeBroker = timeBroker;
         this.tablePrefix = tablePrefix;
         this.schedName = schedName;
         this.instanceId = instanceId;
@@ -2647,7 +2652,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
             ps.setString(2, trigger.getKey().getName());
             ps.setString(3, trigger.getKey().getGroup());
             ps.setString(4, instanceId);
-            ps.setBigDecimal(5, new BigDecimal(String.valueOf(System.currentTimeMillis())));
+            ps.setBigDecimal(5, new BigDecimal(String.valueOf(timeBroker.currentTimeMillis())));
             ps.setBigDecimal(6, new BigDecimal(String.valueOf(trigger.getNextFireTime().getTime())));
             ps.setString(7, state);
             if (job != null) {
@@ -2690,7 +2695,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
             
             ps.setString(1, instanceId);
 
-            ps.setBigDecimal(2, new BigDecimal(String.valueOf(System.currentTimeMillis())));
+            ps.setBigDecimal(2, new BigDecimal(String.valueOf(timeBroker.currentTimeMillis())));
             ps.setBigDecimal(3, new BigDecimal(String.valueOf(trigger.getNextFireTime().getTime())));
             ps.setString(4, state);
 

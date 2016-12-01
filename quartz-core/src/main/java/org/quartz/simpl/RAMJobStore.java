@@ -52,6 +52,7 @@ import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.JobStore;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerSignaler;
+import org.quartz.spi.TimeBroker;
 import org.quartz.spi.TriggerFiredBundle;
 import org.quartz.spi.TriggerFiredResult;
 import org.slf4j.Logger;
@@ -112,6 +113,8 @@ public class RAMJobStore implements JobStore {
 
     protected SchedulerSignaler signaler;
 
+    protected TimeBroker timeBroker;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /*
@@ -148,9 +151,10 @@ public class RAMJobStore implements JobStore {
      * used, in order to give the it a chance to initialize.
      * </p>
      */
-    public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler schedSignaler) {
+    public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler schedSignaler, TimeBroker timeBroker) {
 
         this.signaler = schedSignaler;
+        this.timeBroker = timeBroker;
 
         getLog().info("RAMJobStore initialized.");
     }
@@ -1335,7 +1339,7 @@ public class RAMJobStore implements JobStore {
 
     protected boolean applyMisfire(TriggerWrapper tw) {
 
-        long misfireTime = System.currentTimeMillis();
+        long misfireTime = timeBroker.currentTimeMillis();
         if (getMisfireThreshold() > 0) {
             misfireTime -= getMisfireThreshold();
         }
@@ -1438,7 +1442,7 @@ public class RAMJobStore implements JobStore {
                 tw.trigger.setFireInstanceId(getFiredTriggerRecordId());
                 OperableTrigger trig = (OperableTrigger) tw.trigger.clone();
                 if (result.isEmpty()) {
-                    batchEnd = Math.max(tw.trigger.getNextFireTime().getTime(), System.currentTimeMillis()) + timeWindow;
+                    batchEnd = Math.max(tw.trigger.getNextFireTime().getTime(), timeBroker.currentTimeMillis()) + timeWindow;
                 }
                 result.add(trig);
                 if (result.size() == maxCount)
@@ -1687,6 +1691,9 @@ public class RAMJobStore implements JobStore {
         return false;
     }
 
+    public void setTimeBroker(TimeBroker timeBroker) {
+        this.timeBroker = timeBroker;
+    }
 }
 
 /*******************************************************************************

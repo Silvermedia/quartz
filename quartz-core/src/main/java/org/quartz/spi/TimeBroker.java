@@ -23,9 +23,6 @@ import org.quartz.SchedulerConfigException;
 import org.quartz.SchedulerException;
 
 /**
- * <p>NOTE: TimeBroker is not currently used in the Quartz code base.</p>
- *
- * <p>
  * The interface to be implemented by classes that want to provide a mechanism
  * by which the <code>{@link org.quartz.core.QuartzScheduler}</code> can
  * reliably determine the current time.
@@ -42,7 +39,6 @@ import org.quartz.SchedulerException;
  * </p>
  * 
  * @see org.quartz.core.QuartzScheduler
- * @deprecated TimeBroker is not currently used in the Quartz code base.
  * @author James House
  */
 public interface TimeBroker {
@@ -59,12 +55,16 @@ public interface TimeBroker {
      * <p>
      * Get the current time, as known by the <code>TimeBroker</code>.
      * </p>
-     * 
-     * @throws SchedulerException
-     *           with the error code set to
-     *           SchedulerException.ERR_TIME_BROKER_FAILURE
      */
-    Date getCurrentTime() throws SchedulerException;
+    Date getCurrentTime();
+
+    /**
+     * <p>
+     * Get the current time in milliseconds since epoch, as known by the <code>TimeBroker</code>.
+     * </p>
+     *
+     */
+    long currentTimeMillis();
 
     /**
      * <p>

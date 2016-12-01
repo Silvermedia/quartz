@@ -63,6 +63,16 @@ public class SimpleTimeBroker implements TimeBroker {
         return new Date();
     }
 
+    /**
+     * <p>
+     * Get the current time, simply using <code>System.currentTimeMillis()</code>.
+     * </p>
+     */
+    public long currentTimeMillis()
+    {
+        return System.currentTimeMillis();
+    }
+
     public void initialize() throws SchedulerConfigException {
         // do nothing...
     }

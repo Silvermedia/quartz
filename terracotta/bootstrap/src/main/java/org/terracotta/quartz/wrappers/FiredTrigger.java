@@ -28,10 +28,6 @@ public class FiredTrigger implements Serializable {
   private final long       scheduledFireTime;
   private final long       fireTime;
 
-  public FiredTrigger(String clientId, TriggerKey triggerKey, long scheduledFireTime) {
-    this(clientId, triggerKey, scheduledFireTime, System.currentTimeMillis());
-  }
-  
   public FiredTrigger(String clientId, TriggerKey triggerKey, long scheduledFireTime, long now) {
     this.clientId = clientId;
     this.triggerKey = triggerKey;

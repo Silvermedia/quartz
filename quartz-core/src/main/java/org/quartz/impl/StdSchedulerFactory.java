@@ -31,6 +31,7 @@ import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.management.ManagementRESTServiceConfiguration;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.*;
 import org.quartz.utils.*;
 import org.slf4j.Logger;
@@ -190,6 +191,8 @@ public class StdSchedulerFactory implements SchedulerFactory {
     public static final String PROP_JOB_STORE_CLASS = "org.quartz.jobStore.class";
 
     public static final String PROP_JOB_STORE_USE_PROP = "org.quartz.jobStore.useProperties";
+
+    public static final String PROP_TIME_BROKER_CLASS = "org.quartz.timeBroker.class";
 
     public static final String PROP_DATASOURCE_PREFIX = "org.quartz.dataSource";
 
@@ -834,6 +837,23 @@ public class StdSchedulerFactory implements SchedulerFactory {
             throw initException;
         }
 
+        String tbClass = cfg.getStringProperty(PROP_TIME_BROKER_CLASS,
+                SimpleTimeBroker.class.getName());
+        if (tbClass == null) {
+            initException = new SchedulerException(
+                    "TimeBroker class not specified. ");
+            throw initException;
+        }
+
+        TimeBroker tb;
+        try {
+            tb = (TimeBroker) loadHelper.loadClass(tbClass).newInstance();
+        } catch (Exception e) {
+            initException = new SchedulerException("TimeBroker class '" + tbClass
+                    + "' could not be instantiated.", e);
+            throw initException;
+        }
+
         // Get JobStore Properties
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1293,6 +1313,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
             if(jobFactory != null) {
                 qs.setJobFactory(jobFactory);
             }
+            if(tb != null) {
+                qs.setTimeBroker(tb);
+            }
     
             // Initialize plugins now that we have a Scheduler instance.
             for (int i = 0; i < plugins.length; i++) {
@@ -1318,7 +1341,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
             js.setInstanceId(schedInstId);
             js.setInstanceName(schedName);
             js.setThreadPoolSize(tp.getPoolSize());
-            js.initialize(loadHelper, qs.getSchedulerSignaler());
+            js.initialize(loadHelper, qs.getSchedulerSignaler(), tb);
 
             jrsf.initialize(scheduler);
             

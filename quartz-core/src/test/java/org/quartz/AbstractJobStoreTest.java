@@ -29,6 +29,7 @@ import org.quartz.impl.jdbcjobstore.JobStoreSupport;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.quartz.simpl.CascadingClassLoadHelper;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.JobStore;
 import org.quartz.spi.OperableTrigger;
@@ -54,7 +55,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
         ClassLoadHelper loadHelper = new CascadingClassLoadHelper();
         loadHelper.initialize();
         this.fJobStore = createJobStore("AbstractJobStoreTest");
-        this.fJobStore.initialize(loadHelper, this.fSignaler);
+        this.fJobStore.initialize(loadHelper, this.fSignaler, new SimpleTimeBroker());
         this.fJobStore.schedulerStarted();
 
         this.fJobDetail = new JobDetailImpl("job1", "jobGroup1", MyJob.class);
@@ -315,7 +316,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
         loadHelper.initialize();
 
         JobStore store = createJobStore("testStoreAndRetrieveJobs");
-        store.initialize(loadHelper, schedSignaler);
+        store.initialize(loadHelper, schedSignaler, new SimpleTimeBroker());
 		
 		// Store jobs.
 		for (int i=0; i < 10; i++) {
@@ -341,7 +342,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
         loadHelper.initialize();
 
         JobStore store = createJobStore("testStoreAndRetriveTriggers");
-        store.initialize(loadHelper, schedSignaler);
+        store.initialize(loadHelper, schedSignaler, new SimpleTimeBroker());
 		
 		// Store jobs and triggers.
 		for (int i=0; i < 10; i++) {
@@ -374,7 +375,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
         loadHelper.initialize();
 
         JobStore store = createJobStore("testMatchers");
-        store.initialize(loadHelper, schedSignaler);
+        store.initialize(loadHelper, schedSignaler, new SimpleTimeBroker());
 
         JobDetail job = JobBuilder.newJob(MyJob.class).withIdentity("job1", "aaabbbccc").build();
         store.storeJob(job, true);
@@ -456,7 +457,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
 		loadHelper.initialize();
 		
         JobStore store = createJobStore("testAcquireTriggers");
-		store.initialize(loadHelper, schedSignaler);
+		store.initialize(loadHelper, schedSignaler, new SimpleTimeBroker());
 		
 		// Setup: Store jobs and triggers.
 		long MIN = 60 * 1000L;
@@ -495,7 +496,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
 		loadHelper.initialize();
 		
         JobStore store = createJobStore("testAcquireTriggersInBatch");
-		store.initialize(loadHelper, schedSignaler);
+		store.initialize(loadHelper, schedSignaler, new SimpleTimeBroker());
 		
 		// Setup: Store jobs and triggers.
 		long MIN = 60 * 1000L;

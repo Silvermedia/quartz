@@ -19,6 +19,7 @@ import org.quartz.impl.SchedulerRepository;
 import org.quartz.impl.jdbcjobstore.JdbcQuartzTestUtilities;
 import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.simpl.SimpleThreadPool;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.utils.ConnectionProvider;
 import org.quartz.utils.DBConnectionManager;
 
@@ -54,7 +55,7 @@ public class FlakyJdbcSchedulerTest extends AbstractSchedulerTest {
         jobStore.setTablePrefix("QRTZ_");
         jobStore.setInstanceId("AUTO");
         jobStore.setDbRetryInterval(50);
-        DirectSchedulerFactory.getInstance().createScheduler(name + "Scheduler", "AUTO", new SimpleThreadPool(threadPoolSize, Thread.NORM_PRIORITY), jobStore, null, 0, -1, 50);
+        DirectSchedulerFactory.getInstance().createScheduler(name + "Scheduler", "AUTO", new SimpleThreadPool(threadPoolSize, Thread.NORM_PRIORITY), new SimpleTimeBroker(), jobStore, null, 0, -1, 50);
         return SchedulerRepository.getInstance().lookup(name + "Scheduler");
     }
 

@@ -51,11 +51,13 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.StringMatcher;
 import org.quartz.impl.matchers.StringMatcher.StringOperatorName;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.JobStore;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerSignaler;
 import org.quartz.spi.ThreadExecutor;
+import org.quartz.spi.TimeBroker;
 import org.quartz.spi.TriggerFiredBundle;
 import org.quartz.spi.TriggerFiredResult;
 import org.quartz.utils.DBConnectionManager;
@@ -155,6 +157,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     private final Logger log = LoggerFactory.getLogger(getClass());
     
     private ThreadExecutor threadExecutor = new DefaultThreadExecutor();
+
+    private TimeBroker timeBroker = new SimpleTimeBroker();
     
     private volatile boolean schedulerRunning = false;
     private volatile boolean shutdown = false;
@@ -632,13 +636,14 @@ public abstract class JobStoreSupport implements JobStore, Constants {
      * </p>
      */
     public void initialize(ClassLoadHelper loadHelper,
-            SchedulerSignaler signaler) throws SchedulerConfigException {
+            SchedulerSignaler signaler, TimeBroker timeBroker) throws SchedulerConfigException {
 
         if (dsName == null) { 
             throw new SchedulerConfigException("DataSource name not set."); 
         }
 
         classLoadHelper = loadHelper;
+        this.timeBroker = timeBroker;
         if(isThreadsInheritInitializersClassLoadContext()) {
             log.info("JDBCJobStore threads will inherit ContextClassLoader of thread: " + Thread.currentThread().getName());
             initializersLoader = Thread.currentThread().getContextClassLoader();
@@ -903,7 +908,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     }
 
     protected long getMisfireTime() {
-        long misfireTime = System.currentTimeMillis();
+        long misfireTime = timeBroker.currentTimeMillis();
         if (getMisfireThreshold() > 0) {
             misfireTime -= getMisfireThreshold();
         }
@@ -1000,7 +1005,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
             OperableTrigger trig = retrieveTrigger(conn, triggerKey);
 
-            long misfireTime = System.currentTimeMillis();
+            long misfireTime = timeBroker.currentTimeMillis();
             if (getMisfireThreshold() > 0) {
                 misfireTime -= getMisfireThreshold();
             }
@@ -2586,7 +2591,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
              * 
              * if(res > 0) {
              * 
-             * long misfireTime = System.currentTimeMillis();
+             * long misfireTime = timeBroker.currentTimeMillis();
              * if(getMisfireThreshold() > 0) misfireTime -=
              * getMisfireThreshold();
              * 
@@ -2847,7 +2852,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                     getDelegate().insertFiredTrigger(conn, nextTrigger, STATE_ACQUIRED, null);
 
                     if(acquiredTriggers.isEmpty()) {
-                        batchEnd = Math.max(nextTrigger.getNextFireTime().getTime(), System.currentTimeMillis()) + timeWindow;
+                        batchEnd = Math.max(nextTrigger.getNextFireTime().getTime(), timeBroker.currentTimeMillis()) + timeWindow;
                     }
                     acquiredTriggers.add(nextTrigger);
                 }
@@ -3151,7 +3156,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
                     delegate = delegateClass.newInstance();
                     
-                    delegate.initialize(getLog(), tablePrefix, instanceName, instanceId, getClassLoadHelper(), canUseProperties(), getDriverDelegateInitString());
+                    delegate.initialize(getLog(), timeBroker, tablePrefix, instanceName, instanceId, getClassLoadHelper(), canUseProperties(), getDriverDelegateInitString());
                     
                 } catch (InstantiationException e) {
                     throw new NoSuchDelegateException("Couldn't create delegate: "
@@ -3251,7 +3256,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
     protected boolean firstCheckIn = true;
 
-    protected long lastCheckin = System.currentTimeMillis();
+    protected long lastCheckin = timeBroker.currentTimeMillis();
     
     protected boolean doCheckin() throws JobPersistenceException {
         boolean transOwner = false;
@@ -3318,7 +3323,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         try {
             List<SchedulerStateRecord> failedInstances = new LinkedList<SchedulerStateRecord>();
             boolean foundThisScheduler = false;
-            long timeNow = System.currentTimeMillis();
+            long timeNow = timeBroker.currentTimeMillis();
             
             List<SchedulerStateRecord> states = getDelegate().selectSchedulerStateRecords(conn, null);
 
@@ -3355,7 +3360,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             
             return failedInstances;
         } catch (Exception e) {
-            lastCheckin = System.currentTimeMillis();
+            lastCheckin = timeBroker.currentTimeMillis();
             throw new JobPersistenceException("Failure identifying failed instances when checking-in: "
                     + e.getMessage(), e);
         }
@@ -3399,7 +3404,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     protected long calcFailedIfAfter(SchedulerStateRecord rec) {
         return rec.getCheckinTimestamp() +
             Math.max(rec.getCheckinInterval(), 
-                    (System.currentTimeMillis() - lastCheckin)) +
+                    (timeBroker.currentTimeMillis() - lastCheckin)) +
             7500L;
     }
     
@@ -3412,7 +3417,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             // FUTURE_TODO: handle self-failed-out
 
             // check in...
-            lastCheckin = System.currentTimeMillis();
+            lastCheckin = timeBroker.currentTimeMillis();
             if(getDelegate().updateSchedulerState(conn, getInstanceId(), lastCheckin) == 0) {
                 getDelegate().insertSchedulerState(conn, getInstanceId(),
                         lastCheckin, getClusterCheckinInterval());
@@ -3432,7 +3437,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
         if (failedInstances.size() > 0) {
 
-            long recoverIds = System.currentTimeMillis();
+            long recoverIds = timeBroker.currentTimeMillis();
 
             logWarnIfNonZero(failedInstances.size(),
                     "ClusterManager: detected " + failedInstances.size()
@@ -3836,7 +3841,11 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             }
         }
     }
-    
+
+    public void setTimeBroker(TimeBroker timeBroker) {
+        this.timeBroker = timeBroker;
+    }
+
     /////////////////////////////////////////////////////////////////////////////
     //
     // ClusterManager Thread
@@ -3892,7 +3901,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
                 if (!shutdown) {
                     long timeToSleep = getClusterCheckinInterval();
-                    long transpiredTime = (System.currentTimeMillis() - lastCheckin);
+                    long transpiredTime = (timeBroker.currentTimeMillis() - lastCheckin);
                     timeToSleep = timeToSleep - transpiredTime;
                     if (timeToSleep <= 0) {
                         timeToSleep = 100L;
@@ -3967,7 +3976,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             
             while (!shutdown) {
 
-                long sTime = System.currentTimeMillis();
+                long sTime = timeBroker.currentTimeMillis();
 
                 RecoverMisfiredJobsResult recoverMisfiredJobsResult = manage();
 
@@ -3978,7 +3987,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                 if (!shutdown) {
                     long timeToSleep = 50l;  // At least a short pause to help balance threads
                     if (!recoverMisfiredJobsResult.hasMoreMisfiredTriggers()) {
-                        timeToSleep = getMisfireThreshold() - (System.currentTimeMillis() - sTime);
+                        timeToSleep = getMisfireThreshold() - (timeBroker.currentTimeMillis() - sTime);
                         if (timeToSleep <= 0) {
                             timeToSleep = 50l;
                         }

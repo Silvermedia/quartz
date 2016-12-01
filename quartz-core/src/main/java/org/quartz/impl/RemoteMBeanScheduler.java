@@ -49,6 +49,7 @@ import org.quartz.core.jmx.TriggerSupport;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.StringMatcher;
 import org.quartz.spi.JobFactory;
+import org.quartz.spi.TimeBroker;
 
 /**
  * <p>
@@ -943,5 +944,11 @@ public abstract class RemoteMBeanScheduler implements Scheduler {
     public void setJobFactory(JobFactory factory) throws SchedulerException {
         throw new SchedulerException("Operation not supported for remote schedulers.");
     }
-    
+
+    /**
+     * @see org.quartz.Scheduler#setTimeBroker(org.quartz.spi.TimeBroker)
+     */
+    public void setTimeBroker(TimeBroker timeBroker) throws SchedulerException {
+        throw new SchedulerException("Operation not supported for remote schedulers.");
+    }
 }

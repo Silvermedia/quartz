@@ -914,7 +914,7 @@ public class QuartzSchedulerMBeanImpl extends StandardMBean implements
      */
     public void sendNotification(String eventType, Object data, String msg) {
         Notification notif = new Notification(eventType, this, sequenceNumber
-                .incrementAndGet(), System.currentTimeMillis(), msg);
+                .incrementAndGet(), scheduler.getTimeBroker().currentTimeMillis(), msg);
         if (data != null) {
             notif.setUserData(data);
         }
@@ -976,7 +976,7 @@ public class QuartzSchedulerMBeanImpl extends StandardMBean implements
         if (enabled != this.sampledStatisticsEnabled) {
             this.sampledStatisticsEnabled = enabled;
             if(enabled) {
-                this.sampledStatistics = new SampledStatisticsImpl(scheduler);
+                this.sampledStatistics = new SampledStatisticsImpl(scheduler, scheduler.getTimeBroker());
             }
             else {
                  this.sampledStatistics.shutdown(); 

@@ -71,12 +71,14 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.quartz.simpl.PropertySettingJobFactory;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.spi.SchedulerSignaler;
 import org.quartz.spi.ThreadExecutor;
 import org.quartz.utils.UpdateChecker;
+import org.quartz.spi.TimeBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,6 +173,8 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     ErrorLogger errLogger = null;
 
     private SchedulerSignaler signaler;
+
+    private TimeBroker timeBroker = new SimpleTimeBroker();
 
     private Random random = new Random();
 
@@ -2316,8 +2320,21 @@ J     *
     public JobFactory getJobFactory()  {
         return jobFactory;
     }
-    
-    
+
+    public void setTimeBroker(TimeBroker timeBroker) {
+        if(timeBroker == null) {
+            throw new IllegalArgumentException("TimeBroker cannot be set to null!");
+        }
+
+        getLog().info("TimeBroker set to: " + timeBroker);
+
+        this.timeBroker = timeBroker;
+    }
+
+    public TimeBroker getTimeBroker() {
+        return timeBroker;
+    }
+
     /**
      * Interrupt all instances of the identified InterruptableJob executing in 
      * this Scheduler instance.

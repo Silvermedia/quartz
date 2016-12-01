@@ -39,6 +39,7 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.core.QuartzScheduler;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
+import org.quartz.spi.TimeBroker;
 
 /**
  * <p>
@@ -587,6 +588,13 @@ public class StdScheduler implements Scheduler {
      */
     public void setJobFactory(JobFactory factory) throws SchedulerException {
         sched.setJobFactory(factory);
+    }
+
+    /**
+     * @see org.quartz.Scheduler#setTimeBroker(org.quartz.spi.TimeBroker)
+     */
+    public void setTimeBroker(TimeBroker timeBroker) throws SchedulerException {
+        sched.setTimeBroker(timeBroker);
     }
 
     /**

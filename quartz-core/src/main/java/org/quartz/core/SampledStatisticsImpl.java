@@ -9,6 +9,7 @@ import org.quartz.JobListener;
 import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
 import org.quartz.listeners.SchedulerListenerSupport;
+import org.quartz.spi.TimeBroker;
 import org.quartz.utils.counter.CounterConfig;
 import org.quartz.utils.counter.CounterManager;
 import org.quartz.utils.counter.CounterManagerImpl;
@@ -35,13 +36,13 @@ public class SampledStatisticsImpl extends SchedulerListenerSupport implements S
     private final SampledCounter jobsExecutingCount;
     private final SampledCounter jobsCompletedCount;
     
-    SampledStatisticsImpl(QuartzScheduler scheduler) {
+    SampledStatisticsImpl(QuartzScheduler scheduler, TimeBroker timeBroker) {
         this.scheduler = scheduler;
         
         counterManager = new CounterManagerImpl(new Timer(NAME+"Timer"));
-        jobsScheduledCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG);
-        jobsExecutingCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG);
-        jobsCompletedCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG);
+        jobsScheduledCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG.withTimeBroker(timeBroker));
+        jobsExecutingCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG.withTimeBroker(timeBroker));
+        jobsCompletedCount = createSampledCounter(DEFAULT_SAMPLED_COUNTER_CONFIG.withTimeBroker(timeBroker));
         
         scheduler.addInternalSchedulerListener(this);
         scheduler.addInternalJobListener(this);

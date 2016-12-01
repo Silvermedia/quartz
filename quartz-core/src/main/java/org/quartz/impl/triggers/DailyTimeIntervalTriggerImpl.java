@@ -663,10 +663,9 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
       
         // a. Increment afterTime by a second, so that we are comparing against a time after it!
         if (afterTime == null) {
-          afterTime = new Date(System.currentTimeMillis() + 1000L);
-        } else {
-          afterTime = new Date(afterTime.getTime() + 1000L);
+          throw new IllegalArgumentException("afterTime must be set");
         }
+        afterTime = new Date(afterTime.getTime() + 1000L);
          
         // make sure afterTime is at least startTime
         if(afterTime.before(startTime))
