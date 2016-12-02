@@ -100,8 +100,6 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
      */
     public CronTriggerImpl() {
         super();
-        setStartTime(new Date());
-        setTimeZone(TimeZone.getDefault());
     }
 
     /**
@@ -136,8 +134,6 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
     @Deprecated
     public CronTriggerImpl(String name, String group) {
         super(name, group);
-        setStartTime(new Date());
-        setTimeZone(TimeZone.getDefault());
     }
 
     /**
@@ -160,9 +156,6 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
         super(name, group);
 
         setCronExpression(cronExpression);
-
-        setStartTime(new Date());
-        setTimeZone(TimeZone.getDefault());
     }
     
     /**
@@ -182,8 +175,6 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
     public CronTriggerImpl(String name, String group, String jobName,
             String jobGroup) {
         super(name, group, jobName, jobGroup);
-        setStartTime(new Date());
-        setTimeZone(TimeZone.getDefault());
     }
 
     /**

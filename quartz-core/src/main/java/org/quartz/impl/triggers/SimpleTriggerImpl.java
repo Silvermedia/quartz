@@ -110,59 +110,6 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
 
     /**
      * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * not repeat.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name) {
-        this(name, (String)null);
-    }
-    
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * not repeat.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, String group) {
-        this(name, group, new Date(), null, 0, 0);
-    }
-
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * repeat at the the given interval the given number of times.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, int repeatCount, long repeatInterval) {
-        this(name, null, repeatCount, repeatInterval);
-    }
-
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * repeat at the the given interval the given number of times.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, String group, int repeatCount,
-            long repeatInterval) {
-        this(name, group, new Date(), null, repeatCount, repeatInterval);
-    }
-
-    /**
-     * <p>
      * Create a <code>SimpleTrigger</code> that will occur at the given time,
      * and not repeat.
      * </p>

@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.quartz.TriggerKey;
 import org.terracotta.quartz.wrappers.FiredTrigger;
 
+import static org.terracotta.quartz.upgradability.serialization.Utilities.expand;
 import static org.terracotta.upgradability.serialization.SerializationUpgradabilityTesting.validateSerializedForm;
 
 /**

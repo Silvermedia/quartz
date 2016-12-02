@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class FiredTrigger implements Serializable {
+  private static final long serialVersionUID = -2413911440694870105L;
+
   private final String     clientId;
   private final TriggerKey triggerKey;
   private final long       scheduledFireTime;

@@ -128,27 +128,6 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
 
     /**
      * <p>
-     * Create a <code>DateIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     */
-    public CalendarIntervalTriggerImpl(String name, IntervalUnit intervalUnit,  int repeatInterval) {
-        this(name, null, intervalUnit, repeatInterval);
-    }
-
-    /**
-     * <p>
-     * Create a <code>DateIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     */
-    public CalendarIntervalTriggerImpl(String name, String group, IntervalUnit intervalUnit,
-            int repeatInterval) {
-        this(name, group, new Date(), null, intervalUnit, repeatInterval);
-    }
-    
-    /**
-     * <p>
      * Create a <code>DateIntervalTrigger</code> that will occur at the given time,
      * and repeat at the the given interval until the given end time.
      * </p>

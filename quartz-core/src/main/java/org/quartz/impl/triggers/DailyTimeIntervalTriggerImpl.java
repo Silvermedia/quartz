@@ -136,71 +136,6 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
 
     /**
      * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     * 
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are 
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, TimeOfDay startTimeOfDay, TimeOfDay endTimeOfDay, IntervalUnit intervalUnit,  int repeatInterval) {
-        this(name, null, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-
-    /**
-     * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     * 
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are 
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, String group, TimeOfDay startTimeOfDay, 
-            TimeOfDay endTimeOfDay, IntervalUnit intervalUnit, int repeatInterval) {
-        this(name, group, new Date(), null, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-    
-    /**
-     * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur at the given time,
-     * and repeat at the the given interval until the given end time.
-     * </p>
-     * 
-     * @param startTime
-     *          A <code>Date</code> set to the time for the <code>Trigger</code>
-     *          to fire.
-     * @param endTime
-     *          A <code>Date</code> set to the time for the <code>Trigger</code>
-     *          to quit repeat firing.
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @param repeatInterval
-     *          The number of milliseconds to pause between the repeat firing.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, Date startTime,
-            Date endTime, TimeOfDay startTimeOfDay, TimeOfDay endTimeOfDay, 
-            IntervalUnit intervalUnit,  int repeatInterval) {
-        this(name, null, startTime, endTime, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-    
-    /**
-     * <p>
      * Create a <code>DailyTimeIntervalTrigger</code> that will occur at the given time,
      * and repeat at the the given interval until the given end time.
      * </p>
@@ -476,9 +411,14 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
      */
     @Override
     public void triggered(org.quartz.Calendar calendar) {
+        if(daysOfWeek == null) {
+          daysOfWeek = DailyTimeIntervalScheduleBuilder.ALL_DAYS_OF_THE_WEEK;
+        }
         timesTriggered++;
         previousFireTime = nextFireTime;
-        nextFireTime = getFireTimeAfter(nextFireTime);
+        if(nextFireTime != null) {
+          nextFireTime = getFireTimeAfter(nextFireTime);
+        }
 
         while (nextFireTime != null && calendar != null
                 && !calendar.isTimeIncluded(nextFireTime.getTime())) {
