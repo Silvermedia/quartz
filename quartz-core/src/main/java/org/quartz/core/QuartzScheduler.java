@@ -823,6 +823,10 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         return jobMgr.getExecutingJobs();
     }
 
+    public Date getCurrentTime() throws RemoteException {
+        return timeBroker.getCurrentTime();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///
     /// Scheduling-related Methods
@@ -1179,7 +1183,8 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     public void triggerJob(JobKey jobKey, JobDataMap data) throws SchedulerException {
         validateState();
 
-        OperableTrigger trig = (OperableTrigger) newTrigger().withIdentity(newTriggerId(), Scheduler.DEFAULT_GROUP).forJob(jobKey).build();
+        Date currentTime = timeBroker.getCurrentTime();
+        OperableTrigger trig = (OperableTrigger) newTrigger().startAt(currentTime).withIdentity(newTriggerId(), Scheduler.DEFAULT_GROUP).forJob(jobKey).build();
         trig.computeFirstFireTime(null);
         if(data != null) {
             trig.setJobDataMap(data);

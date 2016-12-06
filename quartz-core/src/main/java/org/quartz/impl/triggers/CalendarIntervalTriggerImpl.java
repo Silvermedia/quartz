@@ -487,7 +487,9 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
     public void triggered(org.quartz.Calendar calendar) {
         timesTriggered++;
         previousFireTime = nextFireTime;
-        nextFireTime = getFireTimeAfter(nextFireTime);
+        if(nextFireTime != null) {
+            nextFireTime = getFireTimeAfter(nextFireTime);
+        }
 
         while (nextFireTime != null && calendar != null
                 && !calendar.isTimeIncluded(nextFireTime.getTime())) {

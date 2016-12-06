@@ -350,7 +350,7 @@ public abstract class AbstractJobStoreTest extends TestCase {
 			JobDetail job = JobBuilder.newJob(MyJob.class).withIdentity("job" + i, group).build();
 			store.storeJob(job, true);
 			SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule();
-			Trigger trigger = TriggerBuilder.newTrigger().withIdentity("job" + i, group).withSchedule(schedule).forJob(job).build();
+			Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("job" + i, group).withSchedule(schedule).forJob(job).build();
 			store.storeTrigger((OperableTrigger)trigger, true);
 		}
 		// Retrieve job and trigger.
@@ -380,19 +380,19 @@ public abstract class AbstractJobStoreTest extends TestCase {
         JobDetail job = JobBuilder.newJob(MyJob.class).withIdentity("job1", "aaabbbccc").build();
         store.storeJob(job, true);
         SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule();
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("trig1", "aaabbbccc").withSchedule(schedule).forJob(job).build();
+        Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("trig1", "aaabbbccc").withSchedule(schedule).forJob(job).build();
         store.storeTrigger((OperableTrigger) trigger, true);
 
         job = JobBuilder.newJob(MyJob.class).withIdentity("job1", "xxxyyyzzz").build();
         store.storeJob(job, true);
         schedule = SimpleScheduleBuilder.simpleSchedule();
-        trigger = TriggerBuilder.newTrigger().withIdentity("trig1", "xxxyyyzzz").withSchedule(schedule).forJob(job).build();
+        trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("trig1", "xxxyyyzzz").withSchedule(schedule).forJob(job).build();
         store.storeTrigger((OperableTrigger)trigger, true);
 
         job = JobBuilder.newJob(MyJob.class).withIdentity("job2", "xxxyyyzzz").build();
         store.storeJob(job, true);
         schedule = SimpleScheduleBuilder.simpleSchedule();
-        trigger = TriggerBuilder.newTrigger().withIdentity("trig2", "xxxyyyzzz").withSchedule(schedule).forJob(job).build();
+        trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("trig2", "xxxyyyzzz").withSchedule(schedule).forJob(job).build();
         store.storeTrigger((OperableTrigger)trigger, true);
 
         Set<JobKey> jkeys = store.getJobKeys(GroupMatcher.anyJobGroup());

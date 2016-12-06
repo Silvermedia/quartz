@@ -26,6 +26,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class TriggerWrapper implements Serializable {
+  private static final long serialVersionUID = -489241285692596637L;
+
   public enum TriggerState {
     WAITING, ACQUIRED, COMPLETE, PAUSED, BLOCKED, PAUSED_BLOCKED, ERROR;
   }

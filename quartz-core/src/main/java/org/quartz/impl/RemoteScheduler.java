@@ -340,6 +340,16 @@ public class RemoteScheduler implements Scheduler {
         }
     }
 
+    @Override
+    public Date getCurrentTime() throws SchedulerException {
+        try {
+            return getRemoteScheduler().getCurrentTime();
+        } catch (RemoteException re) {
+            throw invalidateHandleCreateException(
+                    "Error communicating with remote scheduler.", re);
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///
     /// Scheduling-related Methods

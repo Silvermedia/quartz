@@ -4,6 +4,7 @@
  */
 package org.terracotta.quartz.upgradability;
 
+import java.util.Date;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class BasicUpgradabilityTest {
       JobDetail jobDetail = JobBuilder.newJob(SomeJob.class).withIdentity("testjob", "testjobgroup").storeDurably().build();
       scheduler.addJob(jobDetail, false);
       
-      Trigger trigger = TriggerBuilder.newTrigger().forJob(jobDetail).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10)).build();
+      Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).forJob(jobDetail).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10)).build();
       scheduler.scheduleJob(trigger);
     } finally {
       scheduler.shutdown();

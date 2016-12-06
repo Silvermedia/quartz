@@ -2350,7 +2350,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
             boolean misfired = false;
 
-            if (schedulerRunning && status.getNextFireTime().before(new Date())) {
+            Date currentTime = timeBroker.getCurrentTime();
+            if (schedulerRunning && status.getNextFireTime().before(currentTime)) {
                 misfired = updateMisfiredTrigger(conn, key,
                     newState, true);
             }

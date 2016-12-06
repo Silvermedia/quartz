@@ -21,12 +21,7 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,7 +117,7 @@ public abstract class AbstractSchedulerTest {
         Trigger trigger = newTrigger()
             .withIdentity("t1")
             .forJob(job)
-            .startNow()
+            .startAt(new Date())
             .withSchedule(simpleSchedule()
                     .repeatForever()
                     .withIntervalInSeconds(5))
@@ -150,7 +145,7 @@ public abstract class AbstractSchedulerTest {
         trigger = newTrigger()
             .withIdentity("t2", "g1")
             .forJob(job)
-            .startNow()
+            .startAt(new Date())
             .withSchedule(simpleSchedule()
                     .repeatForever()
                     .withIntervalInSeconds(5))
@@ -166,7 +161,7 @@ public abstract class AbstractSchedulerTest {
         trigger = newTrigger()
             .withIdentity("t3", "g1")
             .forJob(job)
-            .startNow()
+            .startAt(new Date())
             .withSchedule(simpleSchedule()
                     .repeatForever()
                     .withIntervalInSeconds(5))
@@ -219,7 +214,7 @@ public abstract class AbstractSchedulerTest {
         trigger = newTrigger()
             .withIdentity("t4", "g1")
             .forJob(job)
-            .startNow()
+            .startAt(new Date())
             .withSchedule(simpleSchedule()
                     .repeatForever()
                     .withIntervalInSeconds(5))
@@ -365,7 +360,7 @@ public abstract class AbstractSchedulerTest {
         Thread.yield();
         
 		JobDetail job1 = JobBuilder.newJob(TestJobWithSync.class).withIdentity("job1").build();
-		Trigger trigger1 = TriggerBuilder.newTrigger().forJob(job1).build(); 
+		Trigger trigger1 = TriggerBuilder.newTrigger().startAt(new Date()).forJob(job1).build();
 		
 		long sTime = System.currentTimeMillis();
 		
@@ -421,7 +416,7 @@ public abstract class AbstractSchedulerTest {
         sched.getContext().put(DATE_STAMPS, jobExecTimestamps);
         
 		JobDetail job1 = JobBuilder.newJob(TestJobWithSync.class).withIdentity("job1").build();
-		Trigger trigger1 = TriggerBuilder.newTrigger().forJob(job1).build(); 
+		Trigger trigger1 = TriggerBuilder.newTrigger().startAt(new Date()).forJob(job1).build();
 		
 		long sTime = System.currentTimeMillis();
 		
@@ -444,14 +439,14 @@ public abstract class AbstractSchedulerTest {
 		JobDetail job = newJob(TestJob.class).withIdentity("job1", "group1").build();
 		Trigger trigger1 = newTrigger()
 				.withIdentity("trigger1", "group1")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1)
 								.repeatForever())
 				.build();
 		Trigger trigger2 = newTrigger()
 				.withIdentity("trigger2", "group1")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1)
 								.repeatForever())
@@ -479,7 +474,7 @@ public abstract class AbstractSchedulerTest {
             scheduler.getContext().put(BARRIER, barrier);
             scheduler.start();
             scheduler.addJob(newJob().ofType(UncleanShutdownJob.class).withIdentity("job").storeDurably().build(), false);
-            scheduler.scheduleJob(newTrigger().forJob("job").startNow().build());
+            scheduler.scheduleJob(newTrigger().forJob("job").startAt(new Date()).build());
             while (scheduler.getCurrentlyExecutingJobs().isEmpty()) {
                 Thread.sleep(50);
             }
@@ -519,7 +514,7 @@ public abstract class AbstractSchedulerTest {
             scheduler.getContext().put(DATE_STAMPS, jobExecTimestamps);
             scheduler.start();
             scheduler.addJob(newJob().ofType(TestJobWithSync.class).withIdentity("job").storeDurably().build(), false);
-            scheduler.scheduleJob(newTrigger().forJob("job").startNow().build());
+            scheduler.scheduleJob(newTrigger().forJob("job").startAt(new Date()).build());
             while (scheduler.getCurrentlyExecutingJobs().isEmpty()) {
                 Thread.sleep(50);
             }

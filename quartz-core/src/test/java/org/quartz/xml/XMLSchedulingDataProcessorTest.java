@@ -59,7 +59,7 @@ public class XMLSchedulingDataProcessorTest extends TestCase {
 			
 			// Let's setup a fixture job data that we know test is not going modify it.
 			JobDetail job = newJob(MyJob.class).withIdentity("job1").usingJobData("foo", "dont_chg_me").build();
-			Trigger trigger = newTrigger().withIdentity("job1").withSchedule(repeatHourlyForever()).build();
+			Trigger trigger = newTrigger().withIdentity("job1").startAt(new Date()).withSchedule(repeatHourlyForever()).build();
 			scheduler.scheduleJob(job, trigger);			
 			
 			ClassLoadHelper clhelper = new CascadingClassLoadHelper();
@@ -122,11 +122,11 @@ public class XMLSchedulingDataProcessorTest extends TestCase {
 			
 			// Setup existing job with same names as in xml data.
 			JobDetail job = newJob(MyJob.class).withIdentity("job1").build();
-			Trigger trigger = newTrigger().withIdentity("job1").withSchedule(repeatHourlyForever()).build();
+			Trigger trigger = newTrigger().withIdentity("job1").startAt(new Date()).withSchedule(repeatHourlyForever()).build();
 			scheduler.scheduleJob(job, trigger);
 			
 			job = newJob(MyJob.class).withIdentity("job2").build();
-			trigger = newTrigger().withIdentity("job2").withSchedule(repeatHourlyForever()).build();
+			trigger = newTrigger().withIdentity("job2").startAt(new Date()).withSchedule(repeatHourlyForever()).build();
 			scheduler.scheduleJob(job, trigger);
 			
 			// Now load the xml data with directives: overwrite-existing-data=false, ignore-duplicates=true
@@ -149,11 +149,11 @@ public class XMLSchedulingDataProcessorTest extends TestCase {
 
             // Setup existing job with same names as in xml data.
             JobDetail job = newJob(MyJob.class).withIdentity("job1").build();
-            Trigger trigger = newTrigger().withIdentity("job1").withSchedule(repeatHourlyForever()).build();
+            Trigger trigger = newTrigger().withIdentity("job1").startAt(new Date()).withSchedule(repeatHourlyForever()).build();
             scheduler.scheduleJob(job, trigger);
 
             job = newJob(MyJob.class).withIdentity("job2").build();
-            trigger = newTrigger().withIdentity("job2").withSchedule(repeatHourlyForever()).build();
+            trigger = newTrigger().withIdentity("job2").startAt(new Date()).withSchedule(repeatHourlyForever()).build();
             scheduler.scheduleJob(job, trigger);
 
             // Now load the xml data with directives: overwrite-existing-data=false, ignore-duplicates=true
@@ -277,7 +277,7 @@ public class XMLSchedulingDataProcessorTest extends TestCase {
                     .usingJobData("foo", "foo")
                     .build();
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity("testjob1", "DEFAULT")
+                    .withIdentity("testjob1", "DEFAULT").startAt(new Date())
                     .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                     .build();
             scheduler.scheduleJob(jobDetail, trigger);
@@ -328,7 +328,7 @@ public class XMLSchedulingDataProcessorTest extends TestCase {
                     .usingJobData("foo", "foo")
                     .build();
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity("job1", "DEFAULT")
+                    .withIdentity("job1", "DEFAULT").startAt(new Date())
                     .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                     .build();
             scheduler.scheduleJob(jobDetail, trigger);

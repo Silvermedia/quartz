@@ -17,6 +17,7 @@
 package org.quartz.integrations.tests;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,7 @@ public class QuartzDatabaseCronTriggerTest extends QuartzDatabaseTestSupport {
     @Test
     public void testCronRepeatCount() throws Exception {
         CronTrigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("test")
+                .withIdentity("test").startAt(new Date())
                 .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                 .build();
         List<Long> scheduledTimes = Collections.synchronizedList(new LinkedList<Long>());

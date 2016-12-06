@@ -7,6 +7,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.derby.drda.NetworkServerControl;
@@ -103,28 +104,28 @@ public class QTZ179_TriggerLostAfterDbRestart_Test {
 
 		trigger1_1 = newTrigger()
 				.withIdentity("job1", "group1")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_IN_SECONDS)
 								.repeatForever())
 				.build();
 		trigger2_1 = newTrigger()
 				.withIdentity("job2", "group1")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_IN_SECONDS)
 								.repeatForever())
 				.build();
 		trigger1_2 = newTrigger()
 				.withIdentity("job1", "group2")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_IN_SECONDS)
 								.repeatForever())
 				.build();
 		trigger2_2 = newTrigger()
 				.withIdentity("job2", "group2")
-				.startNow()
+				.startAt(new Date())
 				.withSchedule(
 						SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_IN_SECONDS)
 								.repeatForever())

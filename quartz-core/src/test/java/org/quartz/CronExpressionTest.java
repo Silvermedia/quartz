@@ -138,7 +138,7 @@ public class CronExpressionTest extends SerializationTestSupport {
      */
  	public void testQtz259() throws Exception {
  		CronScheduleBuilder schedBuilder = CronScheduleBuilder.cronSchedule("0 0 0 L-2 * ? *");
- 		Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test").withSchedule(schedBuilder).build();
+ 		Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("test").withSchedule(schedBuilder).build();
  				
  		int i = 0;
  		Date pdate = trigger.getFireTimeAfter(new Date());
@@ -156,7 +156,7 @@ public class CronExpressionTest extends SerializationTestSupport {
      */
  	public void testQtz259LW() throws Exception {
  		CronScheduleBuilder schedBuilder = CronScheduleBuilder.cronSchedule("0 0 0 LW * ? *");
- 		Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test").withSchedule(schedBuilder).build();
+ 		Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("test").withSchedule(schedBuilder).build();
  				
  		int i = 0;
  		Date pdate = trigger.getFireTimeAfter(new Date());

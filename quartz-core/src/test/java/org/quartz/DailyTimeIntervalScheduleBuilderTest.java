@@ -44,7 +44,7 @@ public class DailyTimeIntervalScheduleBuilderTest extends TestCase {
   public void testScheduleActualTrigger() throws Exception {
     Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
     JobDetail job = newJob(MyJob.class).build();
-    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test")
+    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test").startAt(new Date())
         .withSchedule(dailyTimeIntervalSchedule()
             .withIntervalInSeconds(3))
             .build();
@@ -104,7 +104,7 @@ public class DailyTimeIntervalScheduleBuilderTest extends TestCase {
   }
 
   public void testHourlyTrigger() {
-    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test")
+    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test").startAt(new Date())
         .withSchedule(dailyTimeIntervalSchedule()
             .withIntervalInHours(1))
             .build();
@@ -117,7 +117,7 @@ public class DailyTimeIntervalScheduleBuilderTest extends TestCase {
   }
   
   public void testMinutelyTriggerWithTimeOfDay() {
-    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test", "group")
+    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test", "group").startAt(new Date())
         .withSchedule(dailyTimeIntervalSchedule()
             .withIntervalInMinutes(72)
             .startingDailyAt(TimeOfDay.hourAndMinuteOfDay(8, 0))
@@ -139,7 +139,7 @@ public class DailyTimeIntervalScheduleBuilderTest extends TestCase {
   public void testSecondlyTriggerWithStartAndEndTime() {
     Date startTime = DateBuilder.dateOf(0,  0, 0, 1, 1, 2011);
     Date endTime = DateBuilder.dateOf(0, 0, 0, 2, 1, 2011);
-    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test", "test")
+    DailyTimeIntervalTrigger trigger = newTrigger().withIdentity("test", "test").startAt(new Date())
         .withSchedule(dailyTimeIntervalSchedule()
             .withIntervalInSeconds(121)
             .startingDailyAt(hourMinuteAndSecondOfDay(10, 0, 0))
@@ -162,7 +162,7 @@ public class DailyTimeIntervalScheduleBuilderTest extends TestCase {
 
   public void testRepeatCountTrigger() {
     DailyTimeIntervalTrigger trigger = newTrigger()
-        .withIdentity("test")
+        .withIdentity("test").startAt(new Date())
         .withSchedule(
             dailyTimeIntervalSchedule()
             .withIntervalInHours(1)

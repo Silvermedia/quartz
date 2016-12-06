@@ -58,7 +58,7 @@ public class TriggerBuilderTest extends TestCase {
 
     public void testTriggerBuilder() throws Exception {
         
-        Trigger trigger = newTrigger()
+        Trigger trigger = newTrigger().startAt(new Date())
             .build();
         
         assertTrue("Expected non-null trigger name ", trigger.getKey().getName() != null);
@@ -72,7 +72,7 @@ public class TriggerBuilderTest extends TestCase {
         Date stime = evenSecondDateAfterNow();
         
         trigger = newTrigger()
-            .withIdentity("t1")
+            .withIdentity("t1").startAt(new Date())
             .withDescription("my description")
             .withPriority(2)
             .endAt(futureDate(10, IntervalUnit.WEEK))

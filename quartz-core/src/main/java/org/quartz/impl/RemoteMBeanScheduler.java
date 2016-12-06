@@ -335,6 +335,15 @@ public abstract class RemoteMBeanScheduler implements Scheduler {
         throw new SchedulerException("Operation not supported for remote schedulers.");
     }
 
+    /**
+     * <p>
+     * Calls the equivalent method on the 'proxied' <code>QuartzScheduler</code>.
+     * </p>
+     */
+    public Date getCurrentTime() throws SchedulerException {
+        throw new SchedulerException("Operation not supported for remote schedulers.");
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///
     /// Scheduling-related Methods

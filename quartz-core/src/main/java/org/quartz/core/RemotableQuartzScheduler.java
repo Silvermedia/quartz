@@ -92,6 +92,8 @@ public interface RemotableQuartzScheduler extends Remote {
     
     List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException, RemoteException;
 
+    Date getCurrentTime() throws RemoteException;;
+
     Date scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException, RemoteException;
 
     Date scheduleJob(Trigger trigger) throws SchedulerException, RemoteException;

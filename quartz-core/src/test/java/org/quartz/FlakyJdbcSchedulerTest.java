@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
@@ -73,7 +74,7 @@ public class FlakyJdbcSchedulerTest extends AbstractSchedulerTest {
 
                 Trigger trigger = TriggerBuilder
                         .newTrigger()
-                        .withIdentity("triggerName" + i, "triggerGroup")
+                        .withIdentity("triggerName" + i, "triggerGroup").startAt(new Date())
                         .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1)
                         .withRepeatCount(execCount - 1)).build();
 

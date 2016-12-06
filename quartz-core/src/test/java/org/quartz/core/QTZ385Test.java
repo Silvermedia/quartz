@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -89,7 +90,7 @@ public class QTZ385Test {
       Scheduler scheduler = factory.getScheduler();
       try {
         scheduler.scheduleJob(JobBuilder.newJob(HelloJob.class).withIdentity("test").requestRecovery().build(), 
-                TriggerBuilder.newTrigger().withIdentity("test").withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(1)).build());
+                TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("test").withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(1)).build());
         scheduler.start();
         barrier.await();
       } finally {

@@ -19,6 +19,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.util.Date;
 import java.util.Properties;
 
 import junit.framework.Assert;
@@ -165,7 +166,7 @@ public class Qtz205SchedulerListenerTest {
 		scheduler.standby();
 		
 		JobDetail job = newJob(Qtz205Job.class).withIdentity("test").build();
-		Trigger trigger = newTrigger().withIdentity("test")
+		Trigger trigger = newTrigger().withIdentity("test").startAt(new Date())
 				.withSchedule(simpleSchedule().withIntervalInMilliseconds(250).withRepeatCount(2))
 				.build();
 		scheduler.scheduleJob(job, trigger);

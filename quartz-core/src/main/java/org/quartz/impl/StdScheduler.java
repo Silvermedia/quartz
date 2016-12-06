@@ -225,6 +225,10 @@ public class StdScheduler implements Scheduler {
         return sched.getCurrentlyExecutingJobs();
     }
 
+    public Date getCurrentTime() {
+        return sched.getTimeBroker().getCurrentTime();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///
     /// Scheduling-related Methods

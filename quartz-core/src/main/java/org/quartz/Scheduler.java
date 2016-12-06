@@ -369,6 +369,11 @@ public interface Scheduler {
     List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException;
 
     /**
+     * Return currently used current time.
+     */
+    Date getCurrentTime() throws SchedulerException;
+
+    /**
      * Set the <code>JobFactory</code> that will be responsible for producing 
      * instances of <code>Job</code> classes.
      * 
@@ -956,6 +961,4 @@ public interface Scheduler {
      * @throws SchedulerException
      */
     void clear() throws SchedulerException;
-
-
 }

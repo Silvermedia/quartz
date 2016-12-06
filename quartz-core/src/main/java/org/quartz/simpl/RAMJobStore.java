@@ -1512,9 +1512,10 @@ public class RAMJobStore implements JobStore {
                 //tw.state = TriggerWrapper.STATE_EXECUTING;
                 tw.state = TriggerWrapper.STATE_WAITING;
 
+                Date currentTime = timeBroker.getCurrentTime();
                 TriggerFiredBundle bndle = new TriggerFiredBundle(retrieveJob(
                         tw.jobKey), trigger, cal,
-                        false, new Date(), trigger.getPreviousFireTime(), prevFireTime,
+                        false, currentTime, trigger.getPreviousFireTime(), prevFireTime,
                         trigger.getNextFireTime());
 
                 JobDetail job = bndle.getJobDetail();

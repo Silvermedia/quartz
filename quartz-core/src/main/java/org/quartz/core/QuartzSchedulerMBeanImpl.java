@@ -247,8 +247,9 @@ public class QuartzSchedulerMBeanImpl extends StandardMBean implements
             at.setKey(new TriggerKey(at.getName(), at.getGroup()));
             
             Date startDate = at.getStartTime();
-            if(startDate == null || startDate.before(new Date())) {
-                at.setStartTime(new Date());
+            Date currentTime = scheduler.getTimeBroker().getCurrentTime();
+            if(startDate == null || startDate.before(currentTime)) {
+                at.setStartTime(currentTime);
             }
             
             scheduler.deleteJob(jobDetail.getKey());
@@ -287,8 +288,9 @@ public class QuartzSchedulerMBeanImpl extends StandardMBean implements
             at.setKey(new TriggerKey(at.getName(), at.getGroup()));
             
             Date startDate = at.getStartTime();
-            if(startDate == null || startDate.before(new Date())) {
-                at.setStartTime(new Date());
+            Date currentTime = scheduler.getTimeBroker().getCurrentTime();
+            if(startDate == null || startDate.before(currentTime)) {
+                at.setStartTime(currentTime);
             }
             
             scheduler.scheduleJob(trigger);

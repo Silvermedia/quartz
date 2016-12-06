@@ -72,6 +72,7 @@ public class TriggerWrapperSerializationTest {
   }
   
   static class DummyOperableTrigger implements OperableTrigger {
+    private static final long serialVersionUID = -8752815505203237871L;
 
     @Override
     public void triggered(Calendar calendar) {

@@ -20,6 +20,7 @@ import static org.quartz.DateBuilder.IntervalUnit.MINUTE;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,12 +33,12 @@ public class TriggerComparatorTest extends TestCase {
     public void testTriggerSort() {
         
         // build trigger in expected sort order
-        Trigger t1 = newTrigger().withIdentity("a").build();
-        Trigger t2 = newTrigger().withIdentity("b").build();
-        Trigger t3 = newTrigger().withIdentity("c").build();
-        Trigger t4 = newTrigger().withIdentity("a", "a").build();
-        Trigger t5 = newTrigger().withIdentity("a", "b").build();
-        Trigger t6 = newTrigger().withIdentity("a", "c").build();
+        Trigger t1 = newTrigger().startAt(new Date()).withIdentity("a").build();
+        Trigger t2 = newTrigger().startAt(new Date()).withIdentity("b").build();
+        Trigger t3 = newTrigger().startAt(new Date()).withIdentity("c").build();
+        Trigger t4 = newTrigger().startAt(new Date()).withIdentity("a", "a").build();
+        Trigger t5 = newTrigger().startAt(new Date()).withIdentity("a", "b").build();
+        Trigger t6 = newTrigger().startAt(new Date()).withIdentity("a", "c").build();
 
         List<Trigger> ts = new LinkedList<Trigger>();
         // add triggers to list in somewhat randomized order
