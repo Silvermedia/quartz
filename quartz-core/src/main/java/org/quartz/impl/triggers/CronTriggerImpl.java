@@ -594,7 +594,7 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
      * </p>
      */
     @Override
-    public void updateAfterMisfire(org.quartz.Calendar cal) {
+    public void updateAfterMisfire(org.quartz.Calendar cal, Date currentTime) {
         int instr = getMisfireInstruction();
 
         if(instr == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)
@@ -605,14 +605,14 @@ public class CronTriggerImpl extends AbstractTrigger<CronTrigger> implements Cro
         }
 
         if (instr == MISFIRE_INSTRUCTION_DO_NOTHING) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
             }
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
-            setNextFireTime(new Date());
+            setNextFireTime(currentTime);
         }
     }
 

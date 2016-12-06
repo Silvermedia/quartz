@@ -1445,7 +1445,8 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
 
     signaler.notifyTriggerListenersMisfired(tw.getTriggerClone());
 
-    tw.updateAfterMisfire(cal, triggerFacade);
+    Date currentTime = timeBroker.getCurrentTime();
+    tw.updateAfterMisfire(cal, currentTime, triggerFacade);
 
     if (tw.getNextFireTime() == null) {
       tw.setState(TriggerState.COMPLETE, terracottaClientId, triggerFacade);

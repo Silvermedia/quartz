@@ -1032,7 +1032,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
         schedSignaler.notifyTriggerListenersMisfired(trig);
 
-        trig.updateAfterMisfire(cal);
+        Date currentTime = timeBroker.getCurrentTime();
+        trig.updateAfterMisfire(cal, currentTime);
 
         if (trig.getNextFireTime() == null) {
             storeTrigger(conn, trig,

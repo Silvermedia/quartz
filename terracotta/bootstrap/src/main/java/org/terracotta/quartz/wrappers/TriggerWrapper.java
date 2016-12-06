@@ -115,8 +115,8 @@ public class TriggerWrapper implements Serializable {
     return this.trigger.getMisfireInstruction();
   }
 
-  public void updateAfterMisfire(Calendar cal, TriggerFacade triggerFacade) {
-    this.trigger.updateAfterMisfire(cal);
+  public void updateAfterMisfire(Calendar cal, Date currentTime, TriggerFacade triggerFacade) {
+    this.trigger.updateAfterMisfire(cal, currentTime);
     rePut(triggerFacade);
   }
 

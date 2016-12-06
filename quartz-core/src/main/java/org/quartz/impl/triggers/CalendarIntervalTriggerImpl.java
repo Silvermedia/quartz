@@ -219,8 +219,6 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
      */
     @Override
     public Date getStartTime() {
-        if(startTime == null)
-            startTime = new Date();
         return startTime;
     }
 
@@ -448,7 +446,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
      * </p>
      */
     @Override
-    public void updateAfterMisfire(org.quartz.Calendar cal) {
+    public void updateAfterMisfire(org.quartz.Calendar cal, Date currentDate) {
         int instr = getMisfireInstruction();
 
         if(instr == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)
@@ -459,7 +457,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
         }
 
         if (instr == MISFIRE_INSTRUCTION_DO_NOTHING) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentDate);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -467,7 +465,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) { 
             // fire once now...
-            setNextFireTime(new Date());
+            setNextFireTime(currentDate);
             // the new fire time afterward will magically preserve the original  
             // time of day for firing for day/week/month interval triggers, 
             // because of the way getFireTimeAfter() works - in its always restarting

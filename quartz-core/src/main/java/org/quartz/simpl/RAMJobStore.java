@@ -1357,7 +1357,7 @@ public class RAMJobStore implements JobStore {
 
         signaler.notifyTriggerListenersMisfired((OperableTrigger)tw.trigger.clone());
 
-        tw.trigger.updateAfterMisfire(cal);
+        tw.trigger.updateAfterMisfire(cal, timeBroker.getCurrentTime());
 
         if (tw.trigger.getNextFireTime() == null) {
             tw.state = TriggerWrapper.STATE_COMPLETE;

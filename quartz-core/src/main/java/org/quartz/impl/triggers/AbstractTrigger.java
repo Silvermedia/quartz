@@ -719,7 +719,7 @@ public abstract class AbstractTrigger<T extends Trigger> implements OperableTrig
      * was created.
      * </p>
      */
-    public abstract void updateAfterMisfire(Calendar cal);
+    public abstract void updateAfterMisfire(Calendar cal, Date currentTime);
 
     /**
      * <p>

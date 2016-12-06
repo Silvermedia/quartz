@@ -89,7 +89,7 @@ public class TriggerWrapperSerializationTest {
     }
 
     @Override
-    public void updateAfterMisfire(Calendar cal) {
+    public void updateAfterMisfire(Calendar cal, Date currentTime) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

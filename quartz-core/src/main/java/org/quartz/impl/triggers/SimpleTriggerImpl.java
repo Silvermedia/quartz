@@ -411,7 +411,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
      * </p>
      */
     @Override
-    public void updateAfterMisfire(Calendar cal) {
+    public void updateAfterMisfire(Calendar cal, Date currentTime) {
         int instr = getMisfireInstruction();
         
         if(instr == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)
@@ -431,9 +431,9 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
         }
 
         if (instr == MISFIRE_INSTRUCTION_FIRE_NOW) {
-            setNextFireTime(new Date());
+            setNextFireTime(currentTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -450,7 +450,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
             }
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -473,7 +473,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
 
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT) {
-            Date newFireTime = new Date();
+            Date newFireTime = currentTime;
             if (repeatCount != 0 && repeatCount != REPEAT_INDEFINITELY) {
                 setRepeatCount(getRepeatCount() - getTimesTriggered());
                 setTimesTriggered(0);
@@ -486,7 +486,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
                 setNextFireTime(newFireTime);
             } 
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT) {
-            Date newFireTime = new Date();
+            Date newFireTime = currentTime;
 
             int timesMissed = computeNumTimesFiredBetween(nextFireTime,
                     newFireTime);
