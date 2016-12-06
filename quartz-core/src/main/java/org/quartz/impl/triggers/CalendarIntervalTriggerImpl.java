@@ -512,7 +512,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
      * @see org.quartz.spi.OperableTrigger#updateWithNewCalendar(org.quartz.Calendar, long)
      */
     @Override
-    public void updateWithNewCalendar(org.quartz.Calendar calendar, long misfireThreshold)
+    public void updateWithNewCalendar(org.quartz.Calendar calendar, Date currentTime, long misfireThreshold)
     {
         nextFireTime = getFireTimeAfter(previousFireTime);
 
@@ -520,7 +520,6 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             return;
         }
         
-        Date now = new Date();
         while (nextFireTime != null && !calendar.isTimeIncluded(nextFireTime.getTime())) {
 
             nextFireTime = getFireTimeAfter(nextFireTime);
@@ -535,8 +534,8 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 nextFireTime = null;
             }
 
-            if(nextFireTime != null && nextFireTime.before(now)) {
-                long diff = now.getTime() - nextFireTime.getTime();
+            if(nextFireTime != null && nextFireTime.before(currentTime)) {
+                long diff = currentTime.getTime() - nextFireTime.getTime();
                 if(diff >= misfireThreshold) {
                     nextFireTime = getFireTimeAfter(nextFireTime);
                 }
@@ -577,7 +576,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             java.util.Calendar c = java.util.Calendar.getInstance();
             c.setTime(nextFireTime);
             if (c.get(java.util.Calendar.YEAR) > YEAR_TO_GIVEUP_SCHEDULING_AT) {
-                return null;
+                throw new RuntimeException("Scheduling exceeded maximum year");
             }
         }
         
@@ -657,10 +656,8 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             return null;
         }
 
-        // increment afterTme by a second, so that we are 
-        // comparing against a time after it!
         if (afterTime == null) {
-            afterTime = new Date();
+            throw new IllegalArgumentException("afterTime must be set");
         }
 
         long startMillis = getStartTime().getTime();

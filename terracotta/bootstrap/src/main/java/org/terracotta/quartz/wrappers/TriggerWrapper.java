@@ -102,8 +102,8 @@ public class TriggerWrapper implements Serializable {
     return (OperableTrigger) this.trigger.clone();
   }
 
-  public void updateWithNewCalendar(Calendar cal, long misfireThreshold, TriggerFacade triggerFacade) {
-    this.trigger.updateWithNewCalendar(cal, misfireThreshold);
+  public void updateWithNewCalendar(Calendar cal, Date currentTime, long misfireThreshold, TriggerFacade triggerFacade) {
+    this.trigger.updateWithNewCalendar(cal, currentTime, misfireThreshold);
     rePut(triggerFacade);
   }
 

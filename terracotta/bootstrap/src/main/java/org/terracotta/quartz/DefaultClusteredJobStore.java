@@ -861,10 +861,11 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
       calendarsByName.putNoReturn(name, cw);
 
       if (cal != null && updateTriggers) {
+        Date currentTime = timeBroker.getCurrentTime();
         for (TriggerWrapper tw : triggerFacade.getTriggerWrappersForCalendar(name)) {
           boolean removed = timeTriggers.remove(tw);
 
-          tw.updateWithNewCalendar(clone, getMisfireThreshold(), triggerFacade);
+          tw.updateWithNewCalendar(clone, currentTime, getMisfireThreshold(), triggerFacade);
 
           if (removed) {
             timeTriggers.add(tw);

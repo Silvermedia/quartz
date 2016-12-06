@@ -739,7 +739,7 @@ public abstract class AbstractTrigger<T extends Trigger> implements OperableTrig
      * 
      * @param cal the modifying calendar
      */
-    public abstract void updateWithNewCalendar(Calendar cal, long misfireThreshold);
+    public abstract void updateWithNewCalendar(Calendar cal, Date currentTime, long misfireThreshold);
 
     /**
      * <p>

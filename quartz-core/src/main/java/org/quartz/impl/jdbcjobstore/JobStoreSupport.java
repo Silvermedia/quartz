@@ -1650,8 +1650,9 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                 if(updateTriggers) {
                     List<OperableTrigger> trigs = getDelegate().selectTriggersForCalendar(conn, calName);
                     
+                    Date currentTime = timeBroker.getCurrentTime();
                     for(OperableTrigger trigger: trigs) {
-                        trigger.updateWithNewCalendar(calendar, getMisfireThreshold());
+                        trigger.updateWithNewCalendar(calendar, currentTime, getMisfireThreshold());
                         storeTrigger(conn, trigger, null, true, STATE_WAITING, false, false);
                     }
                 }

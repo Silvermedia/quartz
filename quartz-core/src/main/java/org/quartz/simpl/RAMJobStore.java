@@ -707,11 +707,12 @@ public class RAMJobStore implements JobStore {
             calendarsByName.put(name, calendar);
     
             if(obj != null && updateTriggers) {
+                Date currentTime = timeBroker.getCurrentTime();
                 for (TriggerWrapper tw : getTriggerWrappersForCalendar(name)) {
                     OperableTrigger trig = tw.getTrigger();
                     boolean removed = timeTriggers.remove(tw);
 
-                    trig.updateWithNewCalendar(calendar, getMisfireThreshold());
+                    trig.updateWithNewCalendar(calendar, currentTime, getMisfireThreshold());
 
                     if (removed) {
                         timeTriggers.add(tw);
