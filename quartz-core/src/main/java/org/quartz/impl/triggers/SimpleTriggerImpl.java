@@ -110,59 +110,6 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
 
     /**
      * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * not repeat.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name) {
-        this(name, (String)null);
-    }
-    
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * not repeat.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, String group) {
-        this(name, group, new Date(), null, 0, 0);
-    }
-
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * repeat at the the given interval the given number of times.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, int repeatCount, long repeatInterval) {
-        this(name, null, repeatCount, repeatInterval);
-    }
-
-    /**
-     * <p>
-     * Create a <code>SimpleTrigger</code> that will occur immediately, and
-     * repeat at the the given interval the given number of times.
-     * </p>
-     * 
-     * @deprecated use a TriggerBuilder instead
-     */
-    @Deprecated
-    public SimpleTriggerImpl(String name, String group, int repeatCount,
-            long repeatInterval) {
-        this(name, group, new Date(), null, repeatCount, repeatInterval);
-    }
-
-    /**
-     * <p>
      * Create a <code>SimpleTrigger</code> that will occur at the given time,
      * and not repeat.
      * </p>
@@ -464,7 +411,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
      * </p>
      */
     @Override
-    public void updateAfterMisfire(Calendar cal) {
+    public void updateAfterMisfire(Calendar cal, Date currentTime) {
         int instr = getMisfireInstruction();
         
         if(instr == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)
@@ -484,9 +431,9 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
         }
 
         if (instr == MISFIRE_INSTRUCTION_FIRE_NOW) {
-            setNextFireTime(new Date());
+            setNextFireTime(currentTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -503,7 +450,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
             }
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -526,7 +473,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
 
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT) {
-            Date newFireTime = new Date();
+            Date newFireTime = currentTime;
             if (repeatCount != 0 && repeatCount != REPEAT_INDEFINITELY) {
                 setRepeatCount(getRepeatCount() - getTimesTriggered());
                 setTimesTriggered(0);
@@ -539,7 +486,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
                 setNextFireTime(newFireTime);
             } 
         } else if (instr == MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT) {
-            Date newFireTime = new Date();
+            Date newFireTime = currentTime;
 
             int timesMissed = computeNumTimesFiredBetween(nextFireTime,
                     newFireTime);
@@ -601,7 +548,7 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
      * @see org.quartz.impl.triggers.AbstractTrigger#updateWithNewCalendar(org.quartz.Calendar, long)
      */
     @Override
-    public void updateWithNewCalendar(Calendar calendar, long misfireThreshold)
+    public void updateWithNewCalendar(Calendar calendar, Date currentTime, long misfireThreshold)
     {
         nextFireTime = getFireTimeAfter(previousFireTime);
 
@@ -609,7 +556,6 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
             return;
         }
         
-        Date now = new Date();
         while (nextFireTime != null && !calendar.isTimeIncluded(nextFireTime.getTime())) {
 
             nextFireTime = getFireTimeAfter(nextFireTime);
@@ -624,8 +570,8 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
                 nextFireTime = null;
             }
 
-            if(nextFireTime != null && nextFireTime.before(now)) {
-                long diff = now.getTime() - nextFireTime.getTime();
+            if(nextFireTime != null && nextFireTime.before(currentTime)) {
+                long diff = currentTime.getTime() - nextFireTime.getTime();
                 if(diff >= misfireThreshold) {
                     nextFireTime = getFireTimeAfter(nextFireTime);
                 }

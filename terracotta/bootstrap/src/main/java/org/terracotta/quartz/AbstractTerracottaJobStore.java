@@ -31,6 +31,7 @@ import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.JobStore;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerSignaler;
+import org.quartz.spi.TimeBroker;
 import org.quartz.spi.TriggerFiredResult;
 import org.terracotta.toolkit.internal.ToolkitInternal;
 import org.terracotta.toolkit.rejoin.RejoinException;
@@ -230,7 +231,8 @@ public abstract class AbstractTerracottaJobStore implements JobStore {
   }
 
   @Override
-  public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler) throws SchedulerConfigException {
+  public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler, TimeBroker timeBroker)
+          throws SchedulerConfigException {
     init();
     realJobStore.setInstanceId(schedInstId);
     realJobStore.setInstanceName(schedName);
@@ -248,7 +250,7 @@ public abstract class AbstractTerracottaJobStore implements JobStore {
       realJobStore.setEstimatedTimeToReleaseAndAcquireTrigger(estimatedTimeToReleaseAndAcquireTrigger);
     }
 
-    realJobStore.initialize(loadHelper, signaler);
+    realJobStore.initialize(loadHelper, signaler, timeBroker);
   }
 
   @Override

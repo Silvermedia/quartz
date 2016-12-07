@@ -65,7 +65,7 @@ public class TriggerBuilder<T extends Trigger> {
 
     private TriggerKey key;
     private String description;
-    private Date startTime = new Date();
+    private Date startTime;
     private Date endTime;
     private int priority = Trigger.DEFAULT_PRIORITY;
     private String calendarName;
@@ -225,19 +225,6 @@ public class TriggerBuilder<T extends Trigger> {
         return this;
     }
     
-    /**
-     * Set the time the Trigger should start at to the current moment - 
-     * the trigger may or may not fire at this time - depending upon the 
-     * schedule configured for the Trigger.  
-     * 
-     * @return the updated TriggerBuilder
-     * @see Trigger#getStartTime()
-     */
-    public TriggerBuilder<T> startNow() {
-        this.startTime = new Date();
-        return this;
-    }
-
     /**
      * Set the time at which the Trigger will no longer fire - even if it's
      * schedule has remaining repeats.    

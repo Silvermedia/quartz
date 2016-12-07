@@ -663,8 +663,10 @@ public class XMLSchedulingDataProcessor implements ErrorHandler {
             Date triggerStartTime;
             if(startTimeFutureSecsString != null)
                 triggerStartTime = new Date(System.currentTimeMillis() + (Long.valueOf(startTimeFutureSecsString) * 1000L));
-            else 
-                triggerStartTime = (startTimeString == null || startTimeString.length() == 0 ? new Date() : DatatypeConverter.parseDateTime(startTimeString).getTime());
+            else if (startTimeString == null || startTimeString.length() == 0) {
+                throw new ParseException("Trigger definition must have start time", -1);
+            }
+            else triggerStartTime = DatatypeConverter.parseDateTime(startTimeString).getTime();
             Date triggerEndTime = endTimeString == null || endTimeString.length() == 0 ? null : DatatypeConverter.parseDateTime(endTimeString).getTime();
 
             TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);

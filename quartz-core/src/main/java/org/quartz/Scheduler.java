@@ -26,6 +26,7 @@ import java.util.Set;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
+import org.quartz.spi.TimeBroker;
 import org.quartz.utils.Key;
 
 /**
@@ -368,6 +369,11 @@ public interface Scheduler {
     List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException;
 
     /**
+     * Return currently used current time.
+     */
+    Date getCurrentTime() throws SchedulerException;
+
+    /**
      * Set the <code>JobFactory</code> that will be responsible for producing 
      * instances of <code>Job</code> classes.
      * 
@@ -380,8 +386,14 @@ public interface Scheduler {
      * @see org.quartz.spi.JobFactory
      */
     void setJobFactory(JobFactory factory) throws SchedulerException;
-    
-    
+
+    /**
+     * Set the <code>TimeBroker</code> that will produce current time.
+     *
+     * @see org.quartz.spi.TimeBroker
+     */
+    void setTimeBroker(TimeBroker timeBroker) throws SchedulerException;
+
     /**
      * Get a reference to the scheduler's <code>ListenerManager</code>,
      * through which listeners may be registered.
@@ -949,6 +961,4 @@ public interface Scheduler {
      * @throws SchedulerException
      */
     void clear() throws SchedulerException;
-
-
 }

@@ -49,6 +49,7 @@ import org.quartz.core.jmx.TriggerSupport;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.StringMatcher;
 import org.quartz.spi.JobFactory;
+import org.quartz.spi.TimeBroker;
 
 /**
  * <p>
@@ -331,6 +332,15 @@ public abstract class RemoteMBeanScheduler implements Scheduler {
      */
     @SuppressWarnings("unchecked")
     public List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException {
+        throw new SchedulerException("Operation not supported for remote schedulers.");
+    }
+
+    /**
+     * <p>
+     * Calls the equivalent method on the 'proxied' <code>QuartzScheduler</code>.
+     * </p>
+     */
+    public Date getCurrentTime() throws SchedulerException {
         throw new SchedulerException("Operation not supported for remote schedulers.");
     }
 
@@ -943,5 +953,11 @@ public abstract class RemoteMBeanScheduler implements Scheduler {
     public void setJobFactory(JobFactory factory) throws SchedulerException {
         throw new SchedulerException("Operation not supported for remote schedulers.");
     }
-    
+
+    /**
+     * @see org.quartz.Scheduler#setTimeBroker(org.quartz.spi.TimeBroker)
+     */
+    public void setTimeBroker(TimeBroker timeBroker) throws SchedulerException {
+        throw new SchedulerException("Operation not supported for remote schedulers.");
+    }
 }

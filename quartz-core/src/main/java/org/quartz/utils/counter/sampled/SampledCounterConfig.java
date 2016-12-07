@@ -16,6 +16,8 @@
 
 package org.quartz.utils.counter.sampled;
 
+import org.quartz.simpl.SimpleTimeBroker;
+import org.quartz.spi.TimeBroker;
 import org.quartz.utils.counter.Counter;
 import org.quartz.utils.counter.CounterConfig;
 
@@ -30,6 +32,7 @@ public class SampledCounterConfig extends CounterConfig {
     private final int intervalSecs;
     private final int historySize;
     private final boolean isReset;
+    private final TimeBroker timeBroker;
 
     /**
      * Make a new timed counter config (duh)
@@ -42,6 +45,10 @@ public class SampledCounterConfig extends CounterConfig {
      *            true if the counter should be reset to 0 upon each sample
      */
     public SampledCounterConfig(int intervalSecs, int historySize, boolean isResetOnSample, long initialValue) {
+        this(intervalSecs, historySize, isResetOnSample, initialValue, new SimpleTimeBroker());
+    }
+
+    private SampledCounterConfig(int intervalSecs, int historySize, boolean isResetOnSample, long initialValue, TimeBroker timeBroker) {
         super(initialValue);
         if (intervalSecs < 1) {
             throw new IllegalArgumentException("Interval (" + intervalSecs + ") must be greater than or equal to 1");
@@ -53,6 +60,19 @@ public class SampledCounterConfig extends CounterConfig {
         this.intervalSecs = intervalSecs;
         this.historySize = historySize;
         this.isReset = isResetOnSample;
+        this.timeBroker = timeBroker;
+    }
+
+    /**
+     * Make a new timed counter config with changed time broker
+     * 
+     * @param timeBroker
+     *            new time broker to use
+     * @return config with specified time broker
+     */
+    public SampledCounterConfig withTimeBroker(TimeBroker timeBroker)
+    {
+        return new SampledCounterConfig(intervalSecs, historySize, isReset, getInitialValue(), timeBroker);
     }
 
     /**
@@ -81,6 +101,16 @@ public class SampledCounterConfig extends CounterConfig {
      */
     public boolean isResetOnSample() {
         return this.isReset;
+    }
+
+    /**
+     * Returns the time broker
+     *
+     * @return Time broker to use by counter
+     */
+    public TimeBroker getTimeBroker()
+    {
+        return timeBroker;
     }
 
     /**

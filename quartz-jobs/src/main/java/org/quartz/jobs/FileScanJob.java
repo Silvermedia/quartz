@@ -120,7 +120,7 @@ public class FileScanJob implements Job {
         if(mergedJobDataMap.containsKey(MINIMUM_UPDATE_AGE)) {
             minAge = mergedJobDataMap.getLong(MINIMUM_UPDATE_AGE);
         }
-        long maxAgeDate = System.currentTimeMillis() + minAge;
+        long maxAgeDate = context.getFireTime().getTime() + minAge;
         
         
         long newDate = getLastModifiedDate(fileName);

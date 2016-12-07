@@ -72,6 +72,7 @@ public class TriggerWrapperSerializationTest {
   }
   
   static class DummyOperableTrigger implements OperableTrigger {
+    private static final long serialVersionUID = -8752815505203237871L;
 
     @Override
     public void triggered(Calendar calendar) {
@@ -89,12 +90,12 @@ public class TriggerWrapperSerializationTest {
     }
 
     @Override
-    public void updateAfterMisfire(Calendar cal) {
+    public void updateAfterMisfire(Calendar cal, Date currentTime) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateWithNewCalendar(Calendar cal, long misfireThreshold) {
+    public void updateWithNewCalendar(Calendar cal, Date currentTime, long misfireThreshold) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

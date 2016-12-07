@@ -20,6 +20,7 @@
 				<group>DEFAULT</group>
 				<job-name>job1</job-name>
 				<job-group>DEFAULT</job-group>
+				<start-time>2005-10-10T10:00:00</start-time>
 				<repeat-count>-1</repeat-count>
 				<repeat-interval>1500</repeat-interval>
 			</simple>

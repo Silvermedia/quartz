@@ -31,11 +31,13 @@ import org.quartz.core.QuartzSchedulerResources;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.JobStore;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.spi.ThreadExecutor;
 import org.quartz.spi.ThreadPool;
+import org.quartz.spi.TimeBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -294,8 +296,34 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      */
     public void createScheduler(String schedulerName,
             String schedulerInstanceId, ThreadPool threadPool, JobStore jobStore)
+            throws SchedulerException {
+        createScheduler(schedulerName, schedulerInstanceId, threadPool, new SimpleTimeBroker(),
+                jobStore);
+    }
+
+
+    /**
+     * Same as
+     * {@link DirectSchedulerFactory#createScheduler(ThreadPool threadPool, JobStore jobStore)},
+     * with the addition of specifying the scheduler name and instance ID. This
+     * scheduler can only be retrieved via
+     * {@link DirectSchedulerFactory#getScheduler(String)}
+     *
+     * @param schedulerName
+     *          The name for the scheduler.
+     * @param schedulerInstanceId
+     *          The instance ID for the scheduler.
+     * @param threadPool
+     *          The thread pool for executing jobs
+     * @param jobStore
+     *          The type of job store
+     * @throws SchedulerException
+     *           if initialization failed
+     */
+    public void createScheduler(String schedulerName,
+            String schedulerInstanceId, ThreadPool threadPool, TimeBroker timeBroker, JobStore jobStore)
         throws SchedulerException {
-        createScheduler(schedulerName, schedulerInstanceId, threadPool,
+        createScheduler(schedulerName, schedulerInstanceId, threadPool, timeBroker,
                 jobStore, null, 0, -1, -1);
     }
 
@@ -323,12 +351,12 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      *           if initialization failed
      */
     public void createScheduler(String schedulerName,
-            String schedulerInstanceId, ThreadPool threadPool,
+            String schedulerInstanceId, ThreadPool threadPool, TimeBroker timeBroker,
             JobStore jobStore, String rmiRegistryHost, int rmiRegistryPort,
             long idleWaitTime, long dbFailureRetryInterval)
         throws SchedulerException {
         createScheduler(schedulerName,
-                schedulerInstanceId, threadPool,
+                schedulerInstanceId, threadPool, timeBroker,
                 jobStore, null, // plugins
                 rmiRegistryHost, rmiRegistryPort,
                 idleWaitTime, dbFailureRetryInterval,
@@ -363,14 +391,14 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      *           if initialization failed
      */
     public void createScheduler(String schedulerName,
-            String schedulerInstanceId, ThreadPool threadPool,
+            String schedulerInstanceId, ThreadPool threadPool, TimeBroker timeBroker,
             JobStore jobStore, Map<String, SchedulerPlugin> schedulerPluginMap,
             String rmiRegistryHost, int rmiRegistryPort,
             long idleWaitTime, long dbFailureRetryInterval,
             boolean jmxExport, String jmxObjectName)
         throws SchedulerException {
         createScheduler(schedulerName, schedulerInstanceId, threadPool,
-                DEFAULT_THREAD_EXECUTOR, jobStore, schedulerPluginMap,
+                DEFAULT_THREAD_EXECUTOR, timeBroker, jobStore, schedulerPluginMap,
                 rmiRegistryHost, rmiRegistryPort, idleWaitTime,
                 dbFailureRetryInterval, jmxExport, jmxObjectName);
     }
@@ -406,13 +434,13 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      */
     public void createScheduler(String schedulerName,
             String schedulerInstanceId, ThreadPool threadPool,
-            ThreadExecutor threadExecutor,
+            ThreadExecutor threadExecutor, TimeBroker timeBroker,
             JobStore jobStore, Map<String, SchedulerPlugin> schedulerPluginMap,
             String rmiRegistryHost, int rmiRegistryPort,
             long idleWaitTime, long dbFailureRetryInterval,
             boolean jmxExport, String jmxObjectName)
         throws SchedulerException {
-        createScheduler(schedulerName, schedulerInstanceId, threadPool,
+        createScheduler(schedulerName, schedulerInstanceId, threadPool, timeBroker,
                 DEFAULT_THREAD_EXECUTOR, jobStore, schedulerPluginMap,
                 rmiRegistryHost, rmiRegistryPort, idleWaitTime,
                 dbFailureRetryInterval, jmxExport, jmxObjectName, DEFAULT_BATCH_MAX_SIZE, DEFAULT_BATCH_TIME_WINDOW);
@@ -452,7 +480,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      *           if initialization failed
      */
     public void createScheduler(String schedulerName,
-            String schedulerInstanceId, ThreadPool threadPool,
+            String schedulerInstanceId, ThreadPool threadPool, TimeBroker timeBroker,
             ThreadExecutor threadExecutor,
             JobStore jobStore, Map<String, SchedulerPlugin> schedulerPluginMap,
             String rmiRegistryHost, int rmiRegistryPort,
@@ -499,7 +527,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
 
         SchedulerDetailsSetter.setDetails(jobStore, schedulerName, schedulerInstanceId);
 
-        jobStore.initialize(cch, qs.getSchedulerSignaler());
+        jobStore.initialize(cch, qs.getSchedulerSignaler(), timeBroker);
 
         Scheduler scheduler = new StdScheduler(qs);
 

@@ -234,8 +234,10 @@ public class XMLSchedulingDataProcessorPlugin
                             .usingJobData(FileScanJob.FILE_SCAN_LISTENER_NAME, JOB_INITIALIZATION_PLUGIN_NAME + '_' + getName())
                             .build();
 
-                        SimpleTrigger trig = newTrigger().withIdentity(tKey).withSchedule(
-                                simpleSchedule().repeatForever().withIntervalInMilliseconds(scanInterval))
+                        SimpleTrigger trig = newTrigger().withIdentity(tKey)
+                                .startAt(getScheduler().getCurrentTime())
+                                .withSchedule(
+                                    simpleSchedule().repeatForever().withIntervalInMilliseconds(scanInterval))
                                 .forJob(job)
                                 .build();
 

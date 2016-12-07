@@ -3,6 +3,7 @@ package org.quartz.jobs;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -61,7 +62,7 @@ public abstract class SendMailJobAuthTestBase {
         configureSendMailJob(job);
 
         Trigger trigger = newTrigger().withIdentity("trigger1", "group1")
-                .startNow().build();
+                .startAt(new Date()).build();
 
         scheduler.scheduleJob(job, trigger);
         scheduler.start();

@@ -18,6 +18,7 @@ package org.quartz.utils.counter.sampled;
 
 import java.util.TimerTask;
 
+import org.quartz.spi.TimeBroker;
 import org.quartz.utils.CircularLossyQueue;
 import org.quartz.utils.counter.CounterImpl;
 
@@ -45,6 +46,7 @@ public class SampledCounterImpl extends CounterImpl implements SampledCounter {
     protected final boolean resetOnSample;
     private final TimerTask samplerTask;
     private final long intervalMillis;
+    private final TimeBroker timeBroker;
 
     /**
      * Constructor accepting a {@link SampledCounterConfig}
@@ -54,6 +56,7 @@ public class SampledCounterImpl extends CounterImpl implements SampledCounter {
     public SampledCounterImpl(SampledCounterConfig config) {
         super(config.getInitialValue());
 
+        this.timeBroker = config.getTimeBroker();
         this.intervalMillis = config.getIntervalSecs() * MILLIS_PER_SEC;
         this.history = new CircularLossyQueue<TimeStampedCounterValue>(config.getHistorySize());
         this.resetOnSample = config.isResetOnSample();
@@ -120,7 +123,7 @@ public class SampledCounterImpl extends CounterImpl implements SampledCounter {
             sample = getValue();
         }
 
-        final long now = System.currentTimeMillis();
+        final long now = timeBroker.currentTimeMillis();
         TimeStampedCounterValue timedSample = new TimeStampedCounterValue(now, sample);
 
         history.push(timedSample);

@@ -17,6 +17,7 @@
 				<group>DEFAULT</group>
 				<job-name>job1</job-name>
 				<job-group>DEFAULT</job-group>
+				<start-time>2006-01-01T10:00:00</start-time>
 			</simple>
 		</trigger>
 		

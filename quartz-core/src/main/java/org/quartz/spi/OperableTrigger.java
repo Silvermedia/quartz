@@ -88,7 +88,7 @@ public interface OperableTrigger extends MutableTrigger {
      * was created.
      * </p>
      */
-    public void updateAfterMisfire(Calendar cal);
+    public void updateAfterMisfire(Calendar cal, Date currentTime);
 
     /**
      * <p>
@@ -108,7 +108,7 @@ public interface OperableTrigger extends MutableTrigger {
      * 
      * @param cal
      */
-    public void updateWithNewCalendar(Calendar cal, long misfireThreshold);
+    public void updateWithNewCalendar(Calendar cal, Date currentTime, long misfireThreshold);
 
     
     /**

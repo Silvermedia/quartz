@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Date;
 
 /**
  * Tests for QTZ-326
@@ -76,7 +77,7 @@ public class DeleteNonExistsJobTest {
     @Test
     public void deleteJobDetailWithTrigger() throws Exception {
         JobDetail jobDetail = JobBuilder.newJob(TestJob.class).withIdentity("testjob2").storeDurably().build();
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("testjob2")
+        Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("testjob2")
                 .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                 .build();
         scheduler.scheduleJob(jobDetail, trigger);
@@ -88,7 +89,7 @@ public class DeleteNonExistsJobTest {
     @Test
     public void deleteTrigger() throws Exception {
         JobDetail jobDetail = JobBuilder.newJob(TestJob.class).withIdentity("testjob3").storeDurably().build();
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("testjob3")
+        Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("testjob3")
                 .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                 .build();
         scheduler.scheduleJob(jobDetail, trigger);
@@ -100,7 +101,7 @@ public class DeleteNonExistsJobTest {
     @Test
     public void replaceJobDetail() throws Exception {
         JobDetail jobDetail = JobBuilder.newJob(TestJob.class).withIdentity("testjob3").storeDurably().build();
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("testjob3")
+        Trigger trigger = TriggerBuilder.newTrigger().startAt(new Date()).withIdentity("testjob3")
                 .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                 .build();
         scheduler.scheduleJob(jobDetail, trigger);

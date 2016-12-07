@@ -133,7 +133,7 @@ public class TriggerSupport {
         if(cData.containsKey("startTime")) {
             startTime = (Date) cData.get("startTime");
         } else {
-            startTime = new Date();
+            throw new IllegalArgumentException("Cannot initialize trigger with no start time");
         }
         trigger.setStartTime(startTime);
         trigger.setEndTime((Date) cData.get("endTime"));
@@ -159,7 +159,7 @@ public class TriggerSupport {
         if(attrMap.containsKey("startTime")) {
             startTime = (Date) attrMap.get("startTime");
         } else {
-            startTime = new Date();
+            throw new IllegalArgumentException("Cannot initialize trigger with no start time");
         }
         trigger.setStartTime(startTime);
         if(attrMap.containsKey("endTime")) {

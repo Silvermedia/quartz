@@ -24,9 +24,11 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.StringMatcher;
 import org.quartz.impl.matchers.StringMatcher.StringOperatorName;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerSignaler;
+import org.quartz.spi.TimeBroker;
 import org.quartz.spi.TriggerFiredBundle;
 import org.quartz.spi.TriggerFiredResult;
 import org.slf4j.Logger;
@@ -98,6 +100,7 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
   private volatile TriggerRemovedFromCandidateFiringListHandler triggerRemovedFromCandidateFiringListHandler;
   private volatile boolean                                      toolkitShutdown;
   private long                                                  retryInterval;
+  private volatile TimeBroker                                   timeBroker                              = new SimpleTimeBroker();
 
   // This is a hack to prevent certain objects from ever being flushed. "this" should never be flushed (at least not
   // until the scheduler is shutdown) since it is referenced from the scheduler (which is not a shared object)
@@ -191,9 +194,10 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
   @Override
   // XXX: remove this suppression
   @SuppressWarnings("unchecked")
-  public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler schedulerSignaler) {
+  public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler schedulerSignaler, TimeBroker timeBroker) {
+    this.timeBroker = timeBroker;
     this.terracottaClientId = clusterInfo.getCurrentNode().getId();
-    this.ftrCtr = System.currentTimeMillis();
+    this.ftrCtr = timeBroker.currentTimeMillis();
 
     // this MUST happen before initializing the trigger set (otherwise we might receive an update which get an NPE)
     // this.serializer.setClassLoadHelper(loadHelper);
@@ -857,10 +861,11 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
       calendarsByName.putNoReturn(name, cw);
 
       if (cal != null && updateTriggers) {
+        Date currentTime = timeBroker.getCurrentTime();
         for (TriggerWrapper tw : triggerFacade.getTriggerWrappersForCalendar(name)) {
           boolean removed = timeTriggers.remove(tw);
 
-          tw.updateWithNewCalendar(clone, getMisfireThreshold(), triggerFacade);
+          tw.updateWithNewCalendar(clone, currentTime, getMisfireThreshold(), triggerFacade);
 
           if (removed) {
             timeTriggers.add(tw);
@@ -1425,7 +1430,7 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
   }
 
   boolean applyMisfire(TriggerWrapper tw) throws JobPersistenceException {
-    long misfireTime = System.currentTimeMillis();
+    long misfireTime = timeBroker.currentTimeMillis();
     if (getMisfireThreshold() > 0) {
       misfireTime -= getMisfireThreshold();
     }
@@ -1441,7 +1446,8 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
 
     signaler.notifyTriggerListenersMisfired(tw.getTriggerClone());
 
-    tw.updateAfterMisfire(cal, triggerFacade);
+    Date currentTime = timeBroker.getCurrentTime();
+    tw.updateAfterMisfire(cal, currentTime, triggerFacade);
 
     if (tw.getNextFireTime() == null) {
       tw.setState(TriggerState.COMPLETE, terracottaClientId, triggerFacade);
@@ -1572,7 +1578,7 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
         }
 
         if (wrappers.isEmpty()) {
-            batchEnd = Math.max(tw.getNextFireTime().getTime(), System.currentTimeMillis()) + timeWindow;
+            batchEnd = Math.max(tw.getNextFireTime().getTime(), timeBroker.currentTimeMillis()) + timeWindow;
         }
         wrappers.add(tw);
         if (wrappers.size() == maxCount) {
@@ -1697,7 +1703,8 @@ class DefaultClusteredJobStore implements ClusteredJobStore {
 
         String fireInstanceId = trigger.getFireInstanceId();
         FiredTrigger prev = triggerFacade.getFiredTrigger(fireInstanceId);
-        triggerFacade.putFiredTrigger(fireInstanceId, new FiredTrigger(terracottaClientId, tw.getKey(), trigger.getPreviousFireTime().getTime()));
+        long now = timeBroker.currentTimeMillis();
+        triggerFacade.putFiredTrigger(fireInstanceId, new FiredTrigger(terracottaClientId, tw.getKey(), trigger.getPreviousFireTime().getTime(), now));
         getLog().trace("Tracking " + trigger + " has fired on " + fireInstanceId);
         if (prev != null) {
           // this shouldn't happen

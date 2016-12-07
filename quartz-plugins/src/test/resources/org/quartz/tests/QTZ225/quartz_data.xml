@@ -26,6 +26,7 @@
 	        <simple>
 	            <name>TestSimpleTrigger1AtFiveSecondInterval</name>
 	            <job-name>ImaginaryJob</job-name>
+                <start-time>2005-10-10T10:00:00</start-time>
 	            <repeat-count>-1</repeat-count> <!-- repeat indefinitely  -->
 	            <repeat-interval>5000</repeat-interval>  <!--  every 5 seconds -->
 	        </simple>

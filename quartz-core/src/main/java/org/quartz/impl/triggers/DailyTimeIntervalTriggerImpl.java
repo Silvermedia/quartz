@@ -136,71 +136,6 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
 
     /**
      * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     * 
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are 
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, TimeOfDay startTimeOfDay, TimeOfDay endTimeOfDay, IntervalUnit intervalUnit,  int repeatInterval) {
-        this(name, null, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-
-    /**
-     * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur immediately, and
-     * repeat at the the given interval.
-     * </p>
-     * 
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are 
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, String group, TimeOfDay startTimeOfDay, 
-            TimeOfDay endTimeOfDay, IntervalUnit intervalUnit, int repeatInterval) {
-        this(name, group, new Date(), null, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-    
-    /**
-     * <p>
-     * Create a <code>DailyTimeIntervalTrigger</code> that will occur at the given time,
-     * and repeat at the the given interval until the given end time.
-     * </p>
-     * 
-     * @param startTime
-     *          A <code>Date</code> set to the time for the <code>Trigger</code>
-     *          to fire.
-     * @param endTime
-     *          A <code>Date</code> set to the time for the <code>Trigger</code>
-     *          to quit repeat firing.
-     * @param startTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should begin occurring.          
-     * @param endTimeOfDay 
-     *          The <code>TimeOfDay</code> that the repeating should stop occurring.          
-     * @param intervalUnit The repeat interval unit. The only intervals that are valid for this type of trigger are
-     * {@link IntervalUnit#SECOND}, {@link IntervalUnit#MINUTE}, and {@link IntervalUnit#HOUR}.
-     * @param repeatInterval
-     *          The number of milliseconds to pause between the repeat firing.
-     * @throws IllegalArgumentException if an invalid IntervalUnit is given, or the repeat interval is zero or less.
-     */
-    public DailyTimeIntervalTriggerImpl(String name, Date startTime,
-            Date endTime, TimeOfDay startTimeOfDay, TimeOfDay endTimeOfDay, 
-            IntervalUnit intervalUnit,  int repeatInterval) {
-        this(name, null, startTime, endTime, startTimeOfDay, endTimeOfDay, intervalUnit, repeatInterval);
-    }
-    
-    /**
-     * <p>
      * Create a <code>DailyTimeIntervalTrigger</code> that will occur at the given time,
      * and repeat at the the given interval until the given end time.
      * </p>
@@ -437,7 +372,7 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
      * </p>
      */
     @Override
-    public void updateAfterMisfire(org.quartz.Calendar cal) {
+    public void updateAfterMisfire(org.quartz.Calendar cal, Date currentTime) {
         int instr = getMisfireInstruction();
 
         if(instr == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)
@@ -448,7 +383,7 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
         }
 
         if (instr == MISFIRE_INSTRUCTION_DO_NOTHING) {
-            Date newFireTime = getFireTimeAfter(new Date());
+            Date newFireTime = getFireTimeAfter(currentTime);
             while (newFireTime != null && cal != null
                     && !cal.isTimeIncluded(newFireTime.getTime())) {
                 newFireTime = getFireTimeAfter(newFireTime);
@@ -456,7 +391,7 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
             setNextFireTime(newFireTime);
         } else if (instr == MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) { 
             // fire once now...
-            setNextFireTime(new Date());
+            setNextFireTime(currentTime);
             // the new fire time afterward will magically preserve the original  
             // time of day for firing for day/week/month interval triggers, 
             // because of the way getFireTimeAfter() works - in its always restarting
@@ -476,9 +411,14 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
      */
     @Override
     public void triggered(org.quartz.Calendar calendar) {
+        if(daysOfWeek == null) {
+          daysOfWeek = DailyTimeIntervalScheduleBuilder.ALL_DAYS_OF_THE_WEEK;
+        }
         timesTriggered++;
         previousFireTime = nextFireTime;
-        nextFireTime = getFireTimeAfter(nextFireTime);
+        if(nextFireTime != null) {
+          nextFireTime = getFireTimeAfter(nextFireTime);
+        }
 
         while (nextFireTime != null && calendar != null
                 && !calendar.isTimeIncluded(nextFireTime.getTime())) {
@@ -506,7 +446,7 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
      * @see org.quartz.impl.triggers.AbstractTrigger#updateWithNewCalendar(org.quartz.Calendar, long)
      */
     @Override
-    public void updateWithNewCalendar(org.quartz.Calendar calendar, long misfireThreshold)
+    public void updateWithNewCalendar(org.quartz.Calendar calendar, Date currentTime, long misfireThreshold)
     {
         nextFireTime = getFireTimeAfter(previousFireTime);
 
@@ -514,7 +454,6 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
             return;
         }
         
-        Date now = new Date();
         while (nextFireTime != null && !calendar.isTimeIncluded(nextFireTime.getTime())) {
 
             nextFireTime = getFireTimeAfter(nextFireTime);
@@ -529,8 +468,8 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
                 nextFireTime = null;
             }
 
-            if(nextFireTime != null && nextFireTime.before(now)) {
-                long diff = now.getTime() - nextFireTime.getTime();
+            if(nextFireTime != null && nextFireTime.before(currentTime)) {
+                long diff = currentTime.getTime() - nextFireTime.getTime();
                 if(diff >= misfireThreshold) {
                     nextFireTime = getFireTimeAfter(nextFireTime);
                 }
@@ -663,10 +602,9 @@ public class DailyTimeIntervalTriggerImpl extends AbstractTrigger<DailyTimeInter
       
         // a. Increment afterTime by a second, so that we are comparing against a time after it!
         if (afterTime == null) {
-          afterTime = new Date(System.currentTimeMillis() + 1000L);
-        } else {
-          afterTime = new Date(afterTime.getTime() + 1000L);
+          throw new IllegalArgumentException("afterTime must be set");
         }
+        afterTime = new Date(afterTime.getTime() + 1000L);
          
         // make sure afterTime is at least startTime
         if(afterTime.before(startTime))

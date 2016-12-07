@@ -265,7 +265,7 @@ public class QuartzSchedulerThread extends Thread {
 
                     List<OperableTrigger> triggers = null;
 
-                    long now = System.currentTimeMillis();
+                    long now = qs.getTimeBroker().currentTimeMillis();
 
                     clearSignaledSchedulingChange();
                     try {
@@ -293,7 +293,7 @@ public class QuartzSchedulerThread extends Thread {
 
                     if (triggers != null && !triggers.isEmpty()) {
 
-                        now = System.currentTimeMillis();
+                        now = qs.getTimeBroker().currentTimeMillis();
                         long triggerTime = triggers.get(0).getNextFireTime().getTime();
                         long timeUntilTrigger = triggerTime - now;
                         while(timeUntilTrigger > 2) {
@@ -305,7 +305,7 @@ public class QuartzSchedulerThread extends Thread {
                                     try {
                                         // we could have blocked a long while
                                         // on 'synchronize', so we must recompute
-                                        now = System.currentTimeMillis();
+                                        now = qs.getTimeBroker().currentTimeMillis();
                                         timeUntilTrigger = triggerTime - now;
                                         if(timeUntilTrigger >= 1)
                                             sigLock.wait(timeUntilTrigger);
@@ -316,7 +316,7 @@ public class QuartzSchedulerThread extends Thread {
                             if(releaseIfScheduleChangedSignificantly(triggers, triggerTime)) {
                                 break;
                             }
-                            now = System.currentTimeMillis();
+                            now = qs.getTimeBroker().currentTimeMillis();
                             timeUntilTrigger = triggerTime - now;
                         }
 
@@ -396,7 +396,7 @@ public class QuartzSchedulerThread extends Thread {
                     continue; // while (!halted)
                 }
 
-                long now = System.currentTimeMillis();
+                long now = qs.getTimeBroker().currentTimeMillis();
                 long waitTime = now + getRandomizedIdleWaitTime();
                 long timeUntilContinue = waitTime - now;
                 synchronized(sigLock) {
@@ -471,7 +471,7 @@ public class QuartzSchedulerThread extends Thread {
 
             if(earlier) {
                 // so the new time is considered earlier, but is it enough earlier?
-                long diff = oldTime - System.currentTimeMillis();
+                long diff = oldTime - qs.getTimeBroker().currentTimeMillis();
                 if(diff < (qsRsrcs.getJobStore().supportsPersistence() ? 70L : 7L))
                     earlier = false;
             }

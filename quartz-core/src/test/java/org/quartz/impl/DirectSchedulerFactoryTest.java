@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 import org.quartz.Scheduler;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.spi.ThreadPool;
@@ -45,7 +46,7 @@ public class DirectSchedulerFactoryTest extends TestCase {
         ThreadPool threadPool = new SimpleThreadPool(1, 5);
         threadPool.initialize();
         DirectSchedulerFactory.getInstance().createScheduler(
-                "MyScheduler", "Instance1", threadPool,
+                "MyScheduler", "Instance1", threadPool, new SimpleTimeBroker(),
                 new RAMJobStore(), Collections.singletonMap("TestPlugin", testPlugin), 
                 null, -1, 0, 0, false, null);
         

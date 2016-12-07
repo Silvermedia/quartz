@@ -18,6 +18,7 @@ package org.quartz;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BrokenBarrierException;
@@ -96,7 +97,7 @@ public class InterruptableJobTest extends TestCase {
         Trigger trigger = newTrigger()
             .withIdentity("t1")
             .forJob(job)
-            .startNow()
+            .startAt(new Date())
             .build();
 
         sched.scheduleJob(job, trigger);

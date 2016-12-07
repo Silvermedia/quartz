@@ -31,6 +31,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerSignaler;
+import org.quartz.spi.TimeBroker;
 import org.quartz.spi.TriggerFiredResult;
 import org.terracotta.toolkit.internal.ToolkitInternal;
 
@@ -130,7 +131,7 @@ public class PlainTerracottaJobStore<T extends ClusteredJobStore> implements Ter
   }
 
   @Override
-  public synchronized void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler)
+  public synchronized void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler, TimeBroker timeBroker)
       throws SchedulerConfigException {
     if (clusteredJobStore != null) { throw new IllegalStateException("already initialized"); }
 
@@ -149,7 +150,7 @@ public class PlainTerracottaJobStore<T extends ClusteredJobStore> implements Ter
     }
     clusteredJobStore.setInstanceId(schedInstanceId);
     clusteredJobStore.setTcRetryInterval(tcRetryInterval);
-    clusteredJobStore.initialize(loadHelper, signaler);
+    clusteredJobStore.initialize(loadHelper, signaler, timeBroker);
 
     // update check
     scheduleUpdateCheck();

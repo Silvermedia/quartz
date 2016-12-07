@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
@@ -19,6 +20,7 @@ import org.quartz.impl.SchedulerRepository;
 import org.quartz.impl.jdbcjobstore.JdbcQuartzTestUtilities;
 import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.simpl.SimpleThreadPool;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.utils.ConnectionProvider;
 import org.quartz.utils.DBConnectionManager;
 
@@ -54,7 +56,7 @@ public class FlakyJdbcSchedulerTest extends AbstractSchedulerTest {
         jobStore.setTablePrefix("QRTZ_");
         jobStore.setInstanceId("AUTO");
         jobStore.setDbRetryInterval(50);
-        DirectSchedulerFactory.getInstance().createScheduler(name + "Scheduler", "AUTO", new SimpleThreadPool(threadPoolSize, Thread.NORM_PRIORITY), jobStore, null, 0, -1, 50);
+        DirectSchedulerFactory.getInstance().createScheduler(name + "Scheduler", "AUTO", new SimpleThreadPool(threadPoolSize, Thread.NORM_PRIORITY), new SimpleTimeBroker(), jobStore, null, 0, -1, 50);
         return SchedulerRepository.getInstance().lookup(name + "Scheduler");
     }
 
@@ -72,7 +74,7 @@ public class FlakyJdbcSchedulerTest extends AbstractSchedulerTest {
 
                 Trigger trigger = TriggerBuilder
                         .newTrigger()
-                        .withIdentity("triggerName" + i, "triggerGroup")
+                        .withIdentity("triggerName" + i, "triggerGroup").startAt(new Date())
                         .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1)
                         .withRepeatCount(execCount - 1)).build();
 

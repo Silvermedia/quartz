@@ -71,12 +71,14 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.quartz.simpl.PropertySettingJobFactory;
+import org.quartz.simpl.SimpleTimeBroker;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.spi.SchedulerSignaler;
 import org.quartz.spi.ThreadExecutor;
 import org.quartz.utils.UpdateChecker;
+import org.quartz.spi.TimeBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,6 +173,8 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     ErrorLogger errLogger = null;
 
     private SchedulerSignaler signaler;
+
+    private TimeBroker timeBroker = new SimpleTimeBroker();
 
     private Random random = new Random();
 
@@ -819,6 +823,10 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         return jobMgr.getExecutingJobs();
     }
 
+    public Date getCurrentTime() throws RemoteException {
+        return timeBroker.getCurrentTime();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///
     /// Scheduling-related Methods
@@ -1175,7 +1183,8 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     public void triggerJob(JobKey jobKey, JobDataMap data) throws SchedulerException {
         validateState();
 
-        OperableTrigger trig = (OperableTrigger) newTrigger().withIdentity(newTriggerId(), Scheduler.DEFAULT_GROUP).forJob(jobKey).build();
+        Date currentTime = timeBroker.getCurrentTime();
+        OperableTrigger trig = (OperableTrigger) newTrigger().startAt(currentTime).withIdentity(newTriggerId(), Scheduler.DEFAULT_GROUP).forJob(jobKey).build();
         trig.computeFirstFireTime(null);
         if(data != null) {
             trig.setJobDataMap(data);
@@ -2316,8 +2325,21 @@ J     *
     public JobFactory getJobFactory()  {
         return jobFactory;
     }
-    
-    
+
+    public void setTimeBroker(TimeBroker timeBroker) {
+        if(timeBroker == null) {
+            throw new IllegalArgumentException("TimeBroker cannot be set to null!");
+        }
+
+        getLog().info("TimeBroker set to: " + timeBroker);
+
+        this.timeBroker = timeBroker;
+    }
+
+    public TimeBroker getTimeBroker() {
+        return timeBroker;
+    }
+
     /**
      * Interrupt all instances of the identified InterruptableJob executing in 
      * this Scheduler instance.

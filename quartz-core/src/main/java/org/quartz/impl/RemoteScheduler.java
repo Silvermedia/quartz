@@ -42,6 +42,7 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.core.RemotableQuartzScheduler;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
+import org.quartz.spi.TimeBroker;
 
 /**
  * <p>
@@ -333,6 +334,16 @@ public class RemoteScheduler implements Scheduler {
     public List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException {
         try {
             return getRemoteScheduler().getCurrentlyExecutingJobs();
+        } catch (RemoteException re) {
+            throw invalidateHandleCreateException(
+                    "Error communicating with remote scheduler.", re);
+        }
+    }
+
+    @Override
+    public Date getCurrentTime() throws SchedulerException {
+        try {
+            return getRemoteScheduler().getCurrentTime();
         } catch (RemoteException re) {
             throw invalidateHandleCreateException(
                     "Error communicating with remote scheduler.", re);
@@ -928,5 +939,14 @@ public class RemoteScheduler implements Scheduler {
         throw new SchedulerException(
                 "Operation not supported for remote schedulers.");
     }
+
+    /**
+     * @see org.quartz.Scheduler#setTimeBroker(org.quartz.spi.TimeBroker)
+     */
+    public void setTimeBroker(TimeBroker timeBroker) throws SchedulerException {
+        throw new SchedulerException(
+                "Operation not supported for remote schedulers.");
+    }
+
 
 }

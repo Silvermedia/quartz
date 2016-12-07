@@ -26,6 +26,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class TriggerWrapper implements Serializable {
+  private static final long serialVersionUID = -489241285692596637L;
+
   public enum TriggerState {
     WAITING, ACQUIRED, COMPLETE, PAUSED, BLOCKED, PAUSED_BLOCKED, ERROR;
   }
@@ -102,8 +104,8 @@ public class TriggerWrapper implements Serializable {
     return (OperableTrigger) this.trigger.clone();
   }
 
-  public void updateWithNewCalendar(Calendar cal, long misfireThreshold, TriggerFacade triggerFacade) {
-    this.trigger.updateWithNewCalendar(cal, misfireThreshold);
+  public void updateWithNewCalendar(Calendar cal, Date currentTime, long misfireThreshold, TriggerFacade triggerFacade) {
+    this.trigger.updateWithNewCalendar(cal, currentTime, misfireThreshold);
     rePut(triggerFacade);
   }
 
@@ -115,8 +117,8 @@ public class TriggerWrapper implements Serializable {
     return this.trigger.getMisfireInstruction();
   }
 
-  public void updateAfterMisfire(Calendar cal, TriggerFacade triggerFacade) {
-    this.trigger.updateAfterMisfire(cal);
+  public void updateAfterMisfire(Calendar cal, Date currentTime, TriggerFacade triggerFacade) {
+    this.trigger.updateAfterMisfire(cal, currentTime);
     rePut(triggerFacade);
   }
 

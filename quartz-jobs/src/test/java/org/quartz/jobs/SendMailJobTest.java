@@ -6,6 +6,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -67,7 +68,7 @@ public class SendMailJobTest {
 
         SimpleTrigger trigger = newTrigger()
                 .withIdentity("trigger1", "group1")
-                .startNow()
+                .startAt(new Date())
                 .withSchedule(
                         simpleSchedule().withIntervalInSeconds(120)
                                 .withRepeatCount(1)).build();
